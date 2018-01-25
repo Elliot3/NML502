@@ -4,17 +4,17 @@
 
 # x <- matrix(c(1,0,0,0,1,0,0,0,0,0,0,1), nrow = 4, ncol = 3, byrow = T)
 # y <- matrix(c(2,1,-2,-2,1,4,3,-2,2), nrow = 3, ncol = 3, byrow = T)
-# mu <- 0.2
+# mu <- 0.1
 # n <- 1000
-# tol <- 0.0001
+# tol <- 0.0000001
 
 ### Data B
 
 # x <- matrix(c(1,0,0,0,0,1,0,0,0,0,0,0.8,0,0,1,0.2), nrow = 4, ncol = 4, byrow = T)
 # y <- matrix(c(2,1,-2,1,-2,1,4,2,3,-2,2,1), nrow = 3, ncol = 4, byrow = T)
-# mu <- 0.5
-# n <- 1000
-# tol <- 0.0001
+# mu <- 0.1
+# n <- 5000
+# tol <- 0.0000001
 
 ### Command to run the function with the sample data
 
