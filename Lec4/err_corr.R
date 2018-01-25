@@ -14,6 +14,9 @@
 
 err_corr <- function(x, y, mu, n, tol) {
     
+    x_orig <- x
+    y_orig <- y
+    
     x_dims <- dim(x)
     y_dims <- dim(y)
     
@@ -41,6 +44,19 @@ err_corr <- function(x, y, mu, n, tol) {
         
     }
     
-    return(mem_matrix)
+    cat("\n")
+    print("The Memory Matrix:")
+    print(mem_matrix)
+    cat("\n")
+    print("Recall:")
+    cat("\n")
+    print("The Input Matrix:")
+    print(x_orig)
+    cat("\n")
+    print("The desired output:")
+    print(y_orig)
+    cat("\n")
+    print("Confirm: Memory Matrix * Input Matrix:")
+    print(mem_matrix %*% x_orig)
     
 }
