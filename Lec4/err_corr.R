@@ -1,8 +1,14 @@
-x <- matrix(c(1,0,0,0,1,0,0,0,0,0,0,1), nrow = 4, ncol = 3, byrow = T)
-y <- matrix(c(2,1,-2,-2,1,4,3,-2,2), nrow = 3, ncol = 3, byrow = T)
-mu <- 0.2
-n <- 1000
-tol <- 0.0001
+
+
+### Sample data from Lecture
+
+# x <- matrix(c(1,0,0,0,1,0,0,0,0,0,0,1), nrow = 4, ncol = 3, byrow = T)
+# y <- matrix(c(2,1,-2,-2,1,4,3,-2,2), nrow = 3, ncol = 3, byrow = T)
+# mu <- 0.2
+# n <- 1000
+# tol <- 0.0001
+
+### Command to run the function with the sample data
 
 # err_corr(x, y, mu, n, tol)
 
