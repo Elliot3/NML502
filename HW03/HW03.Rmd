@@ -204,6 +204,10 @@ image.plot(rbind(rotate(E_recall), rotate(H_recall), rotate(T_recall), rotate(O_
 
 ```
 
+## Summary
+
+Please see above for our parameter selections. Neither our data nor memory matrix in this iteration were corrupted in any way. Our maximum number of learning steps is 1000, however, if we reached our error tolerence of 0.0000001 then we would immediately terminate the learning process and return the memory matrix. Our learning rate acts as a factor by which to influence the change of weights, we felt that 0.001 was appropriate for us. There was no provided, thresholded, recalled image in this case because our recall was perfect.
+
 # Problem 3b
 
 ## 25% Input Corruption Recall Accuracy
@@ -288,6 +292,36 @@ M_25_recall <- matrix(mem_matrix %*% M_vec_corr_25, nrow = 12, ncol = 12)
 ## Rebuild the image
 
 image.plot(rbind(rotate(E_25_recall), rotate(H_25_recall), rotate(T_25_recall), rotate(O_25_recall), rotate(M_25_recall)), col = heat.colors(12))
+
+```
+
+### Thresholded Memory Recall
+
+```{r, echo = FALSE, fig.height = 3}
+
+## Threshold the recalled image and plot it
+
+E_25_thresh <- E_25_recall
+E_25_thresh[E_25_thresh >= 0] <- 1
+E_25_thresh[E_25_thresh < 0] <- -1
+
+H_25_thresh <- H_25_recall
+H_25_thresh[H_25_thresh >= 0] <- 1
+H_25_thresh[H_25_thresh < 0] <- -1
+
+T_25_thresh <- T_25_recall
+T_25_thresh[T_25_thresh >= 0] <- 1
+T_25_thresh[T_25_thresh < 0] <- -1
+
+O_25_thresh <- O_25_recall
+O_25_thresh[O_25_thresh >= 0] <- 1
+O_25_thresh[O_25_thresh < 0] <- -1
+
+M_25_thresh <- M_25_recall
+M_25_thresh[M_25_thresh >= 0] <- 1
+M_25_thresh[M_25_thresh < 0] <- -1
+
+image.plot(rbind(rotate(E_25_thresh), rotate(H_25_thresh), rotate(T_25_thresh), rotate(O_25_thresh), rotate(M_25_thresh)), col = heat.colors(12))
 
 ```
 
@@ -376,6 +410,40 @@ image.plot(rbind(rotate(E_50_recall), rotate(H_50_recall), rotate(T_50_recall), 
 
 ```
 
+### Thresholded Memory Recall
+
+```{r, echo = FALSE, fig.height = 3}
+
+## Threshold the recalled image and plot it
+
+E_50_thresh <- E_50_recall
+E_50_thresh[E_50_thresh >= 0] <- 1
+E_50_thresh[E_50_thresh < 0] <- -1
+
+H_50_thresh <- H_50_recall
+H_50_thresh[H_50_thresh >= 0] <- 1
+H_50_thresh[H_50_thresh < 0] <- -1
+
+T_50_thresh <- T_50_recall
+T_50_thresh[T_50_thresh >= 0] <- 1
+T_50_thresh[T_50_thresh < 0] <- -1
+
+O_50_thresh <- O_50_recall
+O_50_thresh[O_50_thresh >= 0] <- 1
+O_50_thresh[O_50_thresh < 0] <- -1
+
+M_50_thresh <- M_50_recall
+M_50_thresh[M_50_thresh >= 0] <- 1
+M_50_thresh[M_50_thresh < 0] <- -1
+
+image.plot(rbind(rotate(E_50_thresh), rotate(H_50_thresh), rotate(T_50_thresh), rotate(O_50_thresh), rotate(M_50_thresh)), col = heat.colors(12))
+
+```
+
+## Summary
+
+Please see above for our parameter selections. In our first iteration in this section, we randomly select 20% of the input values for each pattern and corrupted them by switching their signs; in the second iteration we increased that number to 50%. Our maximum number of learning steps is 1000, however, if we reached our error tolerence of 0.0000001 then we would immediately terminate the learning process and return the memory matrix. Our learning rate acts as a factor by which to influence the change of weights, we felt that 0.001 was appropriate for us. Our threshold methodology was to set the value to 1 if a value was greater or equal to 0 and to change it to -1 in all other cases. As can be seen by our recalled image and recalled thresholded image of the 20% corruption, we had great results overall and the image can still be interpreted very clearly. However, our 50% corruption did not have great results trying to reproduce the desired output, we can see some what appears to be some of our letters, but it is quite vague.
+
 # Problem 3c
 
 ```{r, echo = FALSE}
@@ -436,7 +504,39 @@ image.plot(rbind(rotate(E_recall_mem), rotate(H_recall_mem), rotate(T_recall_mem
 
 ```
 
+### Thresholded Memory Recall
 
+```{r, echo = FALSE, fig.height = 3}
+
+## Threshold the recalled image and plot it
+
+E_mem_thresh <- E_recall_mem
+E_mem_thresh[E_mem_thresh >= 0] <- 1
+E_mem_thresh[E_mem_thresh < 0] <- -1
+
+H_mem_thresh <- H_recall_mem
+H_mem_thresh[H_mem_thresh >= 0] <- 1
+H_mem_thresh[H_mem_thresh < 0] <- -1
+
+T_mem_thresh <- T_recall_mem
+T_mem_thresh[T_mem_thresh >= 0] <- 1
+T_mem_thresh[T_mem_thresh < 0] <- -1
+
+O_mem_thresh <- O_recall_mem
+O_mem_thresh[O_mem_thresh >= 0] <- 1
+O_mem_thresh[O_mem_thresh < 0] <- -1
+
+M_mem_thresh <- M_recall_mem
+M_mem_thresh[M_mem_thresh >= 0] <- 1
+M_mem_thresh[M_mem_thresh < 0] <- -1
+
+image.plot(rbind(rotate(E_mem_thresh), rotate(H_mem_thresh), rotate(T_mem_thresh), rotate(O_mem_thresh), rotate(M_mem_thresh)), col = heat.colors(12))
+
+```
+
+## Summary
+
+Please see above for our parameter selections. In this section, instead of corrupting the inputs to our network, we corrupted the inputs used to train our network; we corrupted 25% of the values from each input pattern. Our maximum number of learning steps is 1000, however, if we reached our error tolerence of 0.0000001 then we would immediately terminate the learning process and return the memory matrix. Our learning rate acts as a factor by which to influence the change of weights, we felt that 0.001 was appropriate for us. Our threshold methodology was to set the value to 1 if a value was greater or equal to 0 and to change it to -1 in all other cases. As can be seen by our recalled image and recalled thresholded image in this case, we had quite good results. In the original recalled image, we can clearly see the EHTOM pattern what we expect, and at the same time, our thresholded image looks to be perfectly recalled!
 
 
 

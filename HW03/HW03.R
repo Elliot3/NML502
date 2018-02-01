@@ -196,6 +196,30 @@ M_25_recall <- matrix(mem_matrix %*% M_vec_corr_25, nrow = 12, ncol = 12)
 
 image.plot(rbind(rotate(E_25_recall), rotate(H_25_recall), rotate(T_25_recall), rotate(O_25_recall), rotate(M_25_recall)), col = heat.colors(12))
 
+## Threshold the recalled image and plot it
+
+E_25_thresh <- E_25_recall
+E_25_thresh[E_25_thresh >= 0] <- 1
+E_25_thresh[E_25_thresh < 0] <- -1
+
+H_25_thresh <- H_25_recall
+H_25_thresh[H_25_thresh >= 0] <- 1
+H_25_thresh[H_25_thresh < 0] <- -1
+
+T_25_thresh <- T_25_recall
+T_25_thresh[T_25_thresh >= 0] <- 1
+T_25_thresh[T_25_thresh < 0] <- -1
+
+O_25_thresh <- O_25_recall
+O_25_thresh[O_25_thresh >= 0] <- 1
+O_25_thresh[O_25_thresh < 0] <- -1
+
+M_25_thresh <- M_25_recall
+M_25_thresh[M_25_thresh >= 0] <- 1
+M_25_thresh[M_25_thresh < 0] <- -1
+
+image.plot(rbind(rotate(E_25_thresh), rotate(H_25_thresh), rotate(T_25_thresh), rotate(O_25_thresh), rotate(M_25_thresh)), col = heat.colors(12))
+
 
 
 ## Corrupt 50% of from each input pattern
@@ -250,6 +274,30 @@ M_50_recall <- matrix(mem_matrix %*% M_vec_corr_50, nrow = 12, ncol = 12)
 
 image.plot(rbind(rotate(E_50_recall), rotate(H_50_recall), rotate(T_50_recall), rotate(O_50_recall), rotate(M_50_recall)), col = heat.colors(12))
 
+## Threshold the recalled image and plot it
+
+E_50_thresh <- E_50_recall
+E_50_thresh[E_50_thresh >= 0] <- 1
+E_50_thresh[E_50_thresh < 0] <- -1
+
+H_50_thresh <- H_50_recall
+H_50_thresh[H_50_thresh >= 0] <- 1
+H_50_thresh[H_50_thresh < 0] <- -1
+
+T_50_thresh <- T_50_recall
+T_50_thresh[T_50_thresh >= 0] <- 1
+T_50_thresh[T_50_thresh < 0] <- -1
+
+O_50_thresh <- O_50_recall
+O_50_thresh[O_50_thresh >= 0] <- 1
+O_50_thresh[O_50_thresh < 0] <- -1
+
+M_50_thresh <- M_50_recall
+M_50_thresh[M_50_thresh >= 0] <- 1
+M_50_thresh[M_50_thresh < 0] <- -1
+
+image.plot(rbind(rotate(E_50_thresh), rotate(H_50_thresh), rotate(T_50_thresh), rotate(O_50_thresh), rotate(M_50_thresh)), col = heat.colors(12))
+
 
 
 
@@ -284,6 +332,30 @@ M_recall_mem <- matrix(mem_matrix %*% M_vec, nrow = 12, ncol = 12)
 ## Rebuild the image
 
 image.plot(rbind(rotate(E_recall_mem), rotate(H_recall_mem), rotate(T_recall_mem), rotate(O_recall_mem), rotate(M_recall_mem)), col = heat.colors(12))
+
+## Threshold the recalled image and plot it
+
+E_mem_thresh <- E_recall_mem
+E_mem_thresh[E_mem_thresh >= 0] <- 1
+E_mem_thresh[E_mem_thresh < 0] <- -1
+
+H_mem_thresh <- H_recall_mem
+H_mem_thresh[H_mem_thresh >= 0] <- 1
+H_mem_thresh[H_mem_thresh < 0] <- -1
+
+T_mem_thresh <- T_recall_mem
+T_mem_thresh[T_mem_thresh >= 0] <- 1
+T_mem_thresh[T_mem_thresh < 0] <- -1
+
+O_mem_thresh <- O_recall_mem
+O_mem_thresh[O_mem_thresh >= 0] <- 1
+O_mem_thresh[O_mem_thresh < 0] <- -1
+
+M_mem_thresh <- M_recall_mem
+M_mem_thresh[M_mem_thresh >= 0] <- 1
+M_mem_thresh[M_mem_thresh < 0] <- -1
+
+image.plot(rbind(rotate(E_mem_thresh), rotate(H_mem_thresh), rotate(T_mem_thresh), rotate(O_mem_thresh), rotate(M_mem_thresh)), col = heat.colors(12))
 
 
 
