@@ -124,7 +124,7 @@ rotate <- function(x) t(apply(x, 2, rev))
 
 ## Output the original image
 
-image.plot(rbind(rotate(E), rotate(H), rotate(T), rotate(O), rotate(M)))
+image.plot(rbind(rotate(E), rotate(H), rotate(T), rotate(O), rotate(M)), col = heat.colors(12))
 
 ## Recall the images from memory
 
@@ -136,7 +136,7 @@ M_recall <- matrix(mem_matrix %*% M_vec, nrow = 12, ncol = 12)
 
 ## Rebuild the image
 
-image.plot(rbind(rotate(E_recall), rotate(H_recall), rotate(T_recall), rotate(O_recall), rotate(M_recall)))
+image.plot(rbind(rotate(E_recall), rotate(H_recall), rotate(T_recall), rotate(O_recall), rotate(M_recall)), col = heat.colors(12))
 
 
 
@@ -177,7 +177,8 @@ image.plot(rbind(rotate(matrix(E_vec_corr_25, nrow = 12, ncol = 12)),
                  rotate(matrix(H_vec_corr_25, nrow = 12, ncol = 12)),
                  rotate(matrix(T_vec_corr_25, nrow = 12, ncol = 12)),
                  rotate(matrix(O_vec_corr_25, nrow = 12, ncol = 12)),
-                 rotate(matrix(M_vec_corr_25, nrow = 12, ncol = 12))))
+                 rotate(matrix(M_vec_corr_25, nrow = 12, ncol = 12))),
+           col = heat.colors(12))
 
 ## Prepare the 25% corrupted input
 
@@ -193,7 +194,7 @@ M_25_recall <- matrix(mem_matrix %*% M_vec_corr_25, nrow = 12, ncol = 12)
 
 ## Rebuild the image
 
-image.plot(rbind(rotate(E_25_recall), rotate(H_25_recall), rotate(T_25_recall), rotate(O_25_recall), rotate(M_25_recall)))
+image.plot(rbind(rotate(E_25_recall), rotate(H_25_recall), rotate(T_25_recall), rotate(O_25_recall), rotate(M_25_recall)), col = heat.colors(12))
 
 
 
@@ -230,7 +231,8 @@ image.plot(rbind(rotate(matrix(E_vec_corr_50, nrow = 12, ncol = 12)),
                  rotate(matrix(H_vec_corr_50, nrow = 12, ncol = 12)),
                  rotate(matrix(T_vec_corr_50, nrow = 12, ncol = 12)),
                  rotate(matrix(O_vec_corr_50, nrow = 12, ncol = 12)),
-                 rotate(matrix(M_vec_corr_50, nrow = 12, ncol = 12))))
+                 rotate(matrix(M_vec_corr_50, nrow = 12, ncol = 12))),
+           col = heat.colors(12))
 
 ## Prepare the 50% corrupted input
 
@@ -246,7 +248,7 @@ M_50_recall <- matrix(mem_matrix %*% M_vec_corr_50, nrow = 12, ncol = 12)
 
 ## Rebuild the image
 
-image.plot(rbind(rotate(E_50_recall), rotate(H_50_recall), rotate(T_50_recall), rotate(O_50_recall), rotate(M_50_recall)))
+image.plot(rbind(rotate(E_50_recall), rotate(H_50_recall), rotate(T_50_recall), rotate(O_50_recall), rotate(M_50_recall)), col = heat.colors(12))
 
 
 
@@ -264,11 +266,12 @@ image.plot(rbind(rotate(matrix(E_vec_corr_25, nrow = 12, ncol = 12)),
                  rotate(matrix(H_vec_corr_25, nrow = 12, ncol = 12)),
                  rotate(matrix(T_vec_corr_25, nrow = 12, ncol = 12)),
                  rotate(matrix(O_vec_corr_25, nrow = 12, ncol = 12)),
-                 rotate(matrix(M_vec_corr_25, nrow = 12, ncol = 12))))
+                 rotate(matrix(M_vec_corr_25, nrow = 12, ncol = 12))),
+           col = heat.colors(12))
 
 ## Output the original image
 
-image.plot(rbind(rotate(E), rotate(H), rotate(T), rotate(O), rotate(M)))
+image.plot(rbind(rotate(E), rotate(H), rotate(T), rotate(O), rotate(M)), col = heat.colors(12))
 
 ## Recall the images from memory
 
@@ -280,7 +283,7 @@ M_recall_mem <- matrix(mem_matrix %*% M_vec, nrow = 12, ncol = 12)
 
 ## Rebuild the image
 
-image.plot(rbind(rotate(E_recall_mem), rotate(H_recall_mem), rotate(T_recall_mem), rotate(O_recall_mem), rotate(M_recall_mem)))
+image.plot(rbind(rotate(E_recall_mem), rotate(H_recall_mem), rotate(T_recall_mem), rotate(O_recall_mem), rotate(M_recall_mem)), col = heat.colors(12))
 
 
 
