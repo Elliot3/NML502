@@ -1,10 +1,18 @@
+---
+title: 'NML502 HW #3'
+author: "Elliot Smith, Eugen Hruska, Warum Suriyanarayana"
+date: "1/31/2018"
+output: pdf_document
+---
 
-
+```{r, echo = FALSE}
 
 ## Load packages
 
-library(fields)
-
+suppressMessages(
+    library(fields)
+)
+    
 ## Load in the data
 
 E <- matrix(nrow = 12, ncol = 12)
@@ -90,7 +98,42 @@ M[M == 0] <- -1
 
 ## Load in the err_corr function
 
-source("~/Documents/Rice_University/Spring_2018/NML502/Lec4/err_corr.R")
+err_corr <- function(x, y, mu, n, tol) {
+    
+    x_orig <- x
+    y_orig <- y
+    
+    x_dims <- dim(x)
+    y_dims <- dim(y)
+    
+    mem_matrix <- matrix(0, nrow = y_dims[1], ncol = x_dims[1])
+    
+    for (i in 1:n) {
+        
+        j <- sample(1:x_dims[2])
+        x <- x[, j]
+        y <- y[, j]
+        
+        for (k in 1:x_dims[2]) {
+            
+            mem_matrix <- mem_matrix + mu * (y[,k] - mem_matrix %*% x[,k]) %*% x[,k]
+            
+        }
+        
+        if (norm((y - mem_matrix %*% x), "2") <= tol) {
+            
+            # print("Gradient Search Terminated ===>>> ||y - mem_matrix*x|| <= tol")
+            # print(paste0("Number of Iterations = ", n * k))
+            mem_matrix <<- mem_matrix
+            break
+            
+        }
+        
+        mem_matrix <<- mem_matrix
+        
+    }
+    
+}
 
 ## Vectorize the matrices and prepare the input
 
@@ -102,21 +145,50 @@ M_vec <- as.vector(M)
 
 input <- cbind(E_vec, H_vec, T_vec, O_vec, M_vec)
 
+## Set the parameters
+
 mu <- 0.001
 n <- 1000
 tol <- 0.0000001
 
-## Call the err_corr function
+## Run the err_corr function to return the memory matrix
 
 err_corr(input, input, mu, n, tol)
+
+```
+
+# Problem 3
+
+## Problem a
+
+* Learning Rate: 0.001
+* Max Number of Learning Steps: 1000
+* Error Threshold: 0.0000001
+* Error Measure: As defined in errcorr.m
+
+### Recall Accuracy
+
+```{r, echo = FALSE}
 
 ## Load in a function to rotate the output
 
 rotate <- function(x) t(apply(x, 2, rev))
 
+```
+
+##### Original Input/Output
+
+```{r, echo = FALSE, fig.height = 3}
+
 ## Output the original image
 
 image.plot(rbind(rotate(E), rotate(H), rotate(T), rotate(O), rotate(M)), nlevel = 2)
+
+```
+
+##### Memory Recall
+
+```{r, echo = FALSE, fig.height = 3}
 
 ## Recall the images from memory
 
@@ -129,6 +201,17 @@ M_recall <- matrix(mem_matrix %*% M_vec, nrow = 12, ncol = 12)
 ## Rebuild the image
 
 image.plot(rbind(rotate(E_recall), rotate(H_recall), rotate(T_recall), rotate(O_recall), rotate(M_recall)), nlevel = 2)
+
+```
+
+
+
+
+
+
+
+
+
 
 
 
