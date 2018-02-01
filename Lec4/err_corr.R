@@ -46,25 +46,28 @@ err_corr <- function(x, y, mu, n, tol) {
             
             print("Gradient Search Terminated ===>>> ||y - mem_matrix*x|| <= tol")
             print(paste0("Number of Iterations = ", n * k))
+            mem_matrix <<- mem_matrix
             break
             
         }
         
+        mem_matrix <<- mem_matrix
+        
     }
     
-    cat("\n")
-    print("The Memory Matrix:")
-    print(mem_matrix)
-    cat("\n")
-    print("Recall:")
-    cat("\n")
-    print("The Input Matrix:")
-    print(x_orig)
-    cat("\n")
-    print("The desired output:")
-    print(y_orig)
-    cat("\n")
-    print("Confirm: Memory Matrix * Input Matrix:")
-    print(mem_matrix %*% x_orig)
+    # cat("\n")
+    # print("The Memory Matrix:")
+    # print(mem_matrix)
+    # cat("\n")
+    # print("Recall:")
+    # cat("\n")
+    # print("The Input Matrix:")
+    # print(x_orig)
+    # cat("\n")
+    # print("The desired output:")
+    # print(y_orig)
+    # cat("\n")
+    # print("Confirm: Memory Matrix * Input Matrix:")
+    # print(mem_matrix %*% x_orig)
     
 }
