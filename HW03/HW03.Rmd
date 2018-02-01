@@ -5,6 +5,13 @@ date: "1/31/2018"
 output: pdf_document
 ---
 
+# Problem 3
+
+* Learning Rate: 0.001
+* Max Number of Learning Steps: 1000
+* Error Threshold: 0.0000001
+* Error Measure: As defined in errcorr.m
+
 ```{r, echo = FALSE}
 
 ## Load packages
@@ -157,16 +164,9 @@ err_corr(input, input, mu, n, tol)
 
 ```
 
-# Problem 3
+# Problem 3a
 
-## Problem a
-
-* Learning Rate: 0.001
-* Max Number of Learning Steps: 1000
-* Error Threshold: 0.0000001
-* Error Measure: As defined in errcorr.m
-
-### Recall Accuracy
+## Recall Accuracy
 
 ```{r, echo = FALSE}
 
@@ -176,7 +176,7 @@ rotate <- function(x) t(apply(x, 2, rev))
 
 ```
 
-##### Original Input/Output
+### Original Input and Desired Output
 
 ```{r, echo = FALSE, fig.height = 3}
 
@@ -186,7 +186,7 @@ image.plot(rbind(rotate(E), rotate(H), rotate(T), rotate(O), rotate(M)))
 
 ```
 
-##### Memory Recall
+### Memory Recall
 
 ```{r, echo = FALSE, fig.height = 3}
 
@@ -204,9 +204,9 @@ image.plot(rbind(rotate(E_recall), rotate(H_recall), rotate(T_recall), rotate(O_
 
 ```
 
-## Problem b
+# Problem 3b
 
-### 25% Input Input Corruption
+## 25% Input Corruption Recall Accuracy
 
 ```{r, echo = FALSE}
 
@@ -239,7 +239,7 @@ M_vec_corr_25[inds] <- M_vec_corr_25[inds] * (-1)
 
 ```
 
-##### Original Input
+### Original Input
 
 ```{r, echo = FALSE, fig.height = 3}
 
@@ -253,7 +253,17 @@ image.plot(rbind(rotate(matrix(E_vec_corr_25, nrow = 12, ncol = 12)),
 
 ```
 
-##### Memory Recall
+### Desired Output
+
+```{r, echo = FALSE, fig.height = 3}
+
+## Output the original image
+
+image.plot(rbind(rotate(E), rotate(H), rotate(T), rotate(O), rotate(M)))
+
+```
+
+### Memory Recall
 
 ```{r, echo = FALSE, fig.height = 3}
 
@@ -275,7 +285,7 @@ image.plot(rbind(rotate(E_25_recall), rotate(H_25_recall), rotate(T_25_recall), 
 
 ```
 
-### 50% Input Input Corruption
+## 50% Input Corruption Recall Accuracy
 
 ```{r, echo = FALSE}
 
@@ -308,7 +318,7 @@ M_vec_corr_50[inds] <- M_vec_corr_50[inds] * (-1)
 
 ```
 
-##### Original Input
+### Original Input
 
 ```{r, echo = FALSE, fig.height = 3}
 
@@ -322,7 +332,17 @@ image.plot(rbind(rotate(matrix(E_vec_corr_50, nrow = 12, ncol = 12)),
 
 ```
 
-##### Memory Recall
+### Desired Output
+
+```{r, echo = FALSE, fig.height = 3}
+
+## Output the original image
+
+image.plot(rbind(rotate(E), rotate(H), rotate(T), rotate(O), rotate(M)))
+
+```
+
+### Memory Recall
 
 ```{r, echo = FALSE, fig.height = 3}
 
@@ -344,7 +364,59 @@ image.plot(rbind(rotate(E_50_recall), rotate(H_50_recall), rotate(T_50_recall), 
 
 ```
 
+# Problem 3c
 
+```{r, echo = FALSE}
+
+## Call the err_corr function with 25% corruption
+
+err_corr(input_corr_25, input, mu, n, tol)
+
+```
+
+## Corrupted Memory Recall Accuracy
+
+### Original Input
+
+```{r, echo = FALSE, fig.height = 3}
+
+## Output the original, corrupted image
+
+image.plot(rbind(rotate(matrix(E_vec_corr_25, nrow = 12, ncol = 12)), 
+                 rotate(matrix(H_vec_corr_25, nrow = 12, ncol = 12)),
+                 rotate(matrix(T_vec_corr_25, nrow = 12, ncol = 12)),
+                 rotate(matrix(O_vec_corr_25, nrow = 12, ncol = 12)),
+                 rotate(matrix(M_vec_corr_25, nrow = 12, ncol = 12))))
+
+```
+
+### Desired Output
+
+```{r, echo = FALSE, fig.height = 3}
+
+## Output the original image
+
+image.plot(rbind(rotate(E), rotate(H), rotate(T), rotate(O), rotate(M)))
+
+```
+
+### Memory Recall
+
+```{r, echo = FALSE, fig.height = 3}
+
+## Recall the images from memory
+
+E_recall_mem <- matrix(mem_matrix %*% E_vec, nrow = 12, ncol = 12)
+H_recall_mem <- matrix(mem_matrix %*% H_vec, nrow = 12, ncol = 12)
+T_recall_mem <- matrix(mem_matrix %*% T_vec, nrow = 12, ncol = 12)
+O_recall_mem <- matrix(mem_matrix %*% O_vec, nrow = 12, ncol = 12)
+M_recall_mem <- matrix(mem_matrix %*% M_vec, nrow = 12, ncol = 12)
+
+## Rebuild the image
+
+image.plot(rbind(rotate(E_recall_mem), rotate(H_recall_mem), rotate(T_recall_mem), rotate(O_recall_mem), rotate(M_recall_mem)))
+
+```
 
 
 

@@ -142,6 +142,8 @@ image.plot(rbind(rotate(E_recall), rotate(H_recall), rotate(T_recall), rotate(O_
 
 ##### Problem b
 
+
+
 ## Corrupt 25% of from each input pattern
 
 inds <- sort(sample(1:144, 36, replace = FALSE))
@@ -245,6 +247,47 @@ M_50_recall <- matrix(mem_matrix %*% M_vec_corr_50, nrow = 12, ncol = 12)
 ## Rebuild the image
 
 image.plot(rbind(rotate(E_50_recall), rotate(H_50_recall), rotate(T_50_recall), rotate(O_50_recall), rotate(M_50_recall)))
+
+
+
+
+
+##### Problem c
+
+## Call the err_corr function with 25% corruption
+
+err_corr(input_corr_25, input, mu, n, tol)
+
+## Output the original, corrupted image
+
+image.plot(rbind(rotate(matrix(E_vec_corr_25, nrow = 12, ncol = 12)), 
+                 rotate(matrix(H_vec_corr_25, nrow = 12, ncol = 12)),
+                 rotate(matrix(T_vec_corr_25, nrow = 12, ncol = 12)),
+                 rotate(matrix(O_vec_corr_25, nrow = 12, ncol = 12)),
+                 rotate(matrix(M_vec_corr_25, nrow = 12, ncol = 12))))
+
+## Output the original image
+
+image.plot(rbind(rotate(E), rotate(H), rotate(T), rotate(O), rotate(M)))
+
+## Recall the images from memory
+
+E_recall_mem <- matrix(mem_matrix %*% E_vec, nrow = 12, ncol = 12)
+H_recall_mem <- matrix(mem_matrix %*% H_vec, nrow = 12, ncol = 12)
+T_recall_mem <- matrix(mem_matrix %*% T_vec, nrow = 12, ncol = 12)
+O_recall_mem <- matrix(mem_matrix %*% O_vec, nrow = 12, ncol = 12)
+M_recall_mem <- matrix(mem_matrix %*% M_vec, nrow = 12, ncol = 12)
+
+## Rebuild the image
+
+image.plot(rbind(rotate(E_recall_mem), rotate(H_recall_mem), rotate(T_recall_mem), rotate(O_recall_mem), rotate(M_recall_mem)))
+
+
+
+
+
+
+
 
 
 
