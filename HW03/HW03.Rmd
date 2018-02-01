@@ -166,7 +166,7 @@ err_corr(input, input, mu, n, tol)
 * Learning Rate: 0.001
 * Max Number of Learning Steps: 1000
 * Error Threshold: 0.0000001
-* Error Measure: As defined in errcorr.m
+* Error Recall Measure: Percent of thresholded image pixels properly recalled
 
 ```{r, echo = FALSE}
 
@@ -206,7 +206,7 @@ image.plot(rbind(rotate(E_recall), rotate(H_recall), rotate(T_recall), rotate(O_
 
 ## Summary
 
-Please see above for our parameter selections. Neither our data nor memory matrix in this iteration were corrupted in any way. Our maximum number of learning steps is 1000, however, if we reached our error tolerence of 0.0000001 then we would immediately terminate the learning process and return the memory matrix. Our learning rate acts as a factor by which to influence the change of weights, we felt that 0.001 was appropriate for us. There was no provided, thresholded, recalled image in this case because our recall was perfect.
+Please see above for our parameter selections. Neither our data nor memory matrix in this iteration were corrupted in any way. Our maximum number of learning steps is 1000, however, if we reached our error tolerence of 0.0000001 then we would immediately terminate the learning process and return the memory matrix. Our learning rate acts as a factor by which to influence the change of weights, we felt that 0.001 was appropriate for us. There was no provided, thresholded, recalled image in this case because our recall was perfect. In this case, our recall error was a perfect 100%!
 
 # Problem 3b
 
@@ -215,7 +215,7 @@ Please see above for our parameter selections. Neither our data nor memory matri
 * Learning Rate: 0.001
 * Max Number of Learning Steps: 1000
 * Error Threshold: 0.0000001
-* Error Measure: As defined in errcorr.m
+* Error Measure: Percent of thresholded image pixels properly recalled
 
 ```{r, echo = FALSE}
 
@@ -330,7 +330,7 @@ image.plot(rbind(rotate(E_25_thresh), rotate(H_25_thresh), rotate(T_25_thresh), 
 * Learning Rate: 0.001
 * Max Number of Learning Steps: 1000
 * Error Threshold: 0.0000001
-* Error Measure: As defined in errcorr.m
+* Error Measure: Percent of thresholded image pixels properly recalled
 
 ```{r, echo = FALSE}
 
@@ -442,7 +442,7 @@ image.plot(rbind(rotate(E_50_thresh), rotate(H_50_thresh), rotate(T_50_thresh), 
 
 ## Summary
 
-Please see above for our parameter selections. In our first iteration in this section, we randomly select 25% of the input values for each pattern and corrupted them by switching their signs; in the second iteration we increased that number to 50%. Our maximum number of learning steps is 1000, however, if we reached our error tolerence of 0.0000001 then we would immediately terminate the learning process and return the memory matrix. Our learning rate acts as a factor by which to influence the change of weights, we felt that 0.001 was appropriate for us. Our threshold methodology was to set the value to 1 if a value was greater or equal to 0 and to change it to -1 in all other cases. As can be seen by our recalled image and recalled thresholded image of the 25% corruption, we had great results overall and the image can still be interpreted very clearly. However, our 50% corruption did not have great results trying to reproduce the desired output, we can see some what appears to be some of our letters, but it is quite vague.
+Please see above for our parameter selections. In our first iteration in this section, we randomly select 25% of the input values for each pattern and corrupted them by switching their signs; in the second iteration we increased that number to 50%. Our maximum number of learning steps is 1000, however, if we reached our error tolerence of 0.0000001 then we would immediately terminate the learning process and return the memory matrix. Our learning rate acts as a factor by which to influence the change of weights, we felt that 0.001 was appropriate for us. Our threshold methodology was to set the value to 1 if a value was greater or equal to 0 and to change it to -1 in all other cases. As can be seen by our recalled image and recalled thresholded image of the 25% corruption, we had great results overall and the image can still be interpreted very clearly. However, our 50% corruption did not have great results trying to reproduce the desired output, we can see some what appears to be some of our letters, but it is quite vague. For our 25% corrupted inputs our error recall was again a perfect 100%! However, for our 50% corrupted input, our error recall was only 49.72%, much lower than for the 25% corrupted inputs.
 
 # Problem 3c
 
@@ -459,7 +459,7 @@ err_corr(input_corr_25, input, mu, n, tol)
 * Learning Rate: 0.001
 * Max Number of Learning Steps: 1000
 * Error Threshold: 0.0000001
-* Error Measure: As defined in errcorr.m
+* Error Measure: Percent of thresholded image pixels properly recalled
 
 ### Original Training Input
 
@@ -536,7 +536,7 @@ image.plot(rbind(rotate(E_mem_thresh), rotate(H_mem_thresh), rotate(T_mem_thresh
 
 ## Summary
 
-Please see above for our parameter selections. In this section, instead of corrupting the inputs to our network, we corrupted the inputs used to train our network; we corrupted 25% of the values from each input pattern. We omit our image of the input as it is the same from Problem 3a. Our maximum number of learning steps is 1000, however, if we reached our error tolerence of 0.0000001 then we would immediately terminate the learning process and return the memory matrix. Our learning rate acts as a factor by which to influence the change of weights, we felt that 0.001 was appropriate for us. Our threshold methodology was to set the value to 1 if a value was greater or equal to 0 and to change it to -1 in all other cases. As can be seen by our recalled image and recalled thresholded image in this case, we had quite good results. In the original recalled image, we can clearly see the EHTOM pattern what we expect, and at the same time, our thresholded image looks to be perfectly recalled!
+Please see above for our parameter selections. In this section, instead of corrupting the inputs to our network, we corrupted the inputs used to train our network; we corrupted 25% of the values from each input pattern. We omit our image of the input as it is the same from Problem 3a. Our maximum number of learning steps is 1000, however, if we reached our error tolerence of 0.0000001 then we would immediately terminate the learning process and return the memory matrix. Our learning rate acts as a factor by which to influence the change of weights, we felt that 0.001 was appropriate for us. Our threshold methodology was to set the value to 1 if a value was greater or equal to 0 and to change it to -1 in all other cases. As can be seen by our recalled image and recalled thresholded image in this case, we had quite good results. In the original recalled image, we can clearly see the EHTOM pattern what we expect, and at the same time, our thresholded image looks to be perfectly recalled. In this case, our recall error was a perfect 100%!
 
 
 
