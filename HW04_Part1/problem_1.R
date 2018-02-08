@@ -1,6 +1,7 @@
 ## Load in necessary functions
 
 source("~/Documents/Rice_University/Spring_2018/NML502/HW04_Part1/forward_pass.R")
+source("~/Documents/Rice_University/Spring_2018/NML502/HW04_Part1/back_pass.R")
 
 ## Define the hyperbolic tangent function
 

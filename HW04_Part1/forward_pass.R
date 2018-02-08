@@ -4,17 +4,17 @@ activations <- list()
 
 ## Define the forward_pass function
 
-forward_pass <- function(num_layers, weights, biases, x, act_func) {
+forward_pass <- function(num_layers, weights, biases, x, trans_func) {
     
     for (i in 1:num_layers) {
         
         if (i == 1) {
             
-            activations[[i]] <- act_func(weights[[i]] %*% x + biases[[i]])
+            activations[[i]] <- trans_func(weights[[i]] %*% x + biases[[i]])
             
         } else {
             
-            activations[[i]] <- act_func(weights[[i]] %*% activations[[i - 1]] + biases[[i]])
+            activations[[i]] <- trans_func(weights[[i]] %*% activations[[i - 1]] + biases[[i]])
             
         }
         
