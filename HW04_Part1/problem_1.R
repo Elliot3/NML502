@@ -20,6 +20,11 @@ der_trans_func <- function(x) {
     
 }
 
+## Create a container for the errors and learning steps
+
+errors <- numeric()
+ler_step <- numeric()
+
 ## Initialize the network
 
 num_layers <- 2
@@ -81,11 +86,14 @@ for (i in 1:n) {
         
     }
     
-    ## Create a container for the errors
-    
-    errors <- numeric()
-    
     ## Record the error values for each training step
+    
+    if (i %% 100 == 0) {
+        
+        errors[length(errors) + 1] <- length(errors) + 1
+        ler_step[length(ler_step) + 1] <- i
+        
+    }
     
 }
 
