@@ -2,6 +2,7 @@
 
 source("~/Documents/Rice_University/Spring_2018/NML502/HW04_Part1/forward_pass.R")
 source("~/Documents/Rice_University/Spring_2018/NML502/HW04_Part1/back_pass.R")
+source("~/Documents/Rice_University/Spring_2018/NML502/HW04_Part1/rms_error.R")
 
 ## Define the hyperbolic tangent function
 
@@ -79,6 +80,12 @@ for (i in 1:n) {
         }
         
     }
+    
+    ## Create a container for the errors
+    
+    errors <- numeric()
+    
+    ## Record the error values for each training step
     
 }
 
