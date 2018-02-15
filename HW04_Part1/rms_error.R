@@ -2,7 +2,7 @@
 
 rms_error <- function(D, y) {
     
-    rms <- sqrt(sum((D - y)^2)/100)
+    rms <- sqrt(sum((D - y)^2))
     return(rms)
     
 }

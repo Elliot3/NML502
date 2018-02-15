@@ -10,11 +10,23 @@ forward_pass <- function(num_layers, weights, biases, x_pat, trans_func) {
         
         if (i == 1) {
             
-            activations[[i]] <- trans_func(weights[[i]] %*% x_pat + biases[[i]])
+            activations[[i]] <- apply(x_pat, 2, function(z) {
+                
+                trans_func(weights[[i]] %*% z + biases[[i]])
+                
+            })
+            
+            # activations[[i]] <- trans_func(weights[[i]] %*% x_pat + biases[[i]])
             
         } else {
             
-            activations[[i]] <- trans_func(weights[[i]] %*% activations[[i - 1]] + biases[[i]])
+            activations[[i]] <- apply(activations[[i - 1]], 2, function(z) {
+                
+                trans_func(weights[[i]] %*% z + biases[[i]])
+                
+            })
+            
+            # activations[[i]] <- trans_func(weights[[i]] %*% activations[[i - 1]] + biases[[i]])
             
         }
         

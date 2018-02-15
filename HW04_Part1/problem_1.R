@@ -1,3 +1,7 @@
+## Load in necessary packages
+
+library(ggplot2)
+
 ## Load in necessary functions
 
 source("~/Documents/Rice_University/Spring_2018/NML502/HW04_Part1/forward_pass.R")
@@ -24,6 +28,10 @@ der_trans_func <- function(x) {
 
 errors <- numeric()
 ler_step <- numeric()
+input_vecs <- list()
+expected_outputs <- numeric()
+actual_outputs <- numeric()
+
 
 ## Initialize the network
 
@@ -42,8 +50,8 @@ for (i in 1:num_layers) {
 
 ## Initialize the training parameters
 
-n <- 1000
-ler_rate <- 0.001
+n <- 6250
+ler_rate <- 0.05
 
 ## Import the training data
 
@@ -88,14 +96,32 @@ for (i in 1:n) {
     
     ## Record the error values for each training step
     
-    if (i %% 100 == 0) {
+    if ((i * dim(x)[2]) %% 100 == 0) {
         
-        errors[length(errors) + 1] <- length(errors) + 1
-        ler_step[length(ler_step) + 1] <- i
+        err <- rms_error(D = t(y),
+                         y = forward_pass(num_layers, weights, biases, x, trans_func)[[num_layers]])
+        
+        errors[length(errors) + 1] <- err
+        ler_step[length(ler_step) + 1] <- i * dim(x)[2]
+        input_vecs[[length(input_vecs) + 1]] <- x_pat
+        expected_outputs[length(expected_outputs) + 1] <- y_pat
+        actual_outputs[length(actual_outputs) + 1] <- forward_pass(num_layers, weights, biases, x, trans_func)[[num_layers]][dim(x)[2]]
         
     }
     
 }
+
+## Plot the RMSE over time
+
+ggplot() +
+    geom_line(aes(x = ler_step, y = errors)) +
+    labs(x = "Learning Step", y = "RMS Error", title = "RMS Error per Learning Step")
+
+## Plot the training desired vs. actual outputs
+
+ggplot() +
+    geom_line(aes(x = ler_step, y = expected_outputs - actual_outputs)) +
+    labs(x = "Learning Step", y = "Difference, Desired vs. Actual", title = "Desired vs. Actual Output per Learning Step")
 
 
 
