@@ -43,8 +43,8 @@ biases <- list()
 
 for (i in 1:num_layers) {
     
-    weights[[i]] <- matrix(runif(num_outputs[i] * num_outputs[i + 1]), nrow = num_outputs[i + 1], ncol = num_outputs[i])
-    biases[[i]] <- matrix(runif(num_outputs[i] * num_outputs[i + 1]), nrow = num_outputs[i + 1], ncol = 1)
+    weights[[i]] <- matrix(runif(num_outputs[i] * num_outputs[i + 1], min = -0.1, max = 0.1), nrow = num_outputs[i + 1], ncol = num_outputs[i])
+    biases[[i]] <- matrix(runif(num_outputs[i] * num_outputs[i + 1], min = -0.1, max = 0.1), nrow = num_outputs[i + 1], ncol = 1)
     
 }
 
@@ -56,21 +56,30 @@ bias <- 1
 
 ## Initialize the training parameters
 
-n <- 1000
-ler_rate <- 0.001
+n <- 250
+ler_rate <- 0.0005
 
 ## Set the epoch size
 
 K <- 200
 
-## Create the gradient containers
-
-gradient_biases_sum <- list()
-gradient_weights_sum <- list()
-
 ## Learn the weights via batch learning
 
 for (i in 1:n) {
+    
+    ## Randomly permute the indices
+    
+    inds <- sample(1:length(x))
+    
+    ## Perform the permutation
+    
+    x <- x[inds]
+    y <- y[inds]
+    
+    ## Create the gradient containers
+    
+    gradient_biases_sum <- list()
+    gradient_weights_sum <- list()
     
     for (j in 1:K) {
         
