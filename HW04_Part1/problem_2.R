@@ -121,11 +121,8 @@ for (i in 1:n) {
     
     if (TRUE == TRUE) {
         
-        x_test <- runif(n = 200, min = 0.1, max = 1)
-        y_test <- (1/x_test)/10
-        
-        err <- rms_error(D = t(y_test),
-                         y = forward_pass(num_layers, weights, biases, matrix(x_test, nrow = 1), trans_func)[[num_layers]])
+        err <- rms_error(D = t(y),
+                         y = forward_pass(num_layers, weights, biases, matrix(x, nrow = 1), trans_func)[[num_layers]])
         
         errors[length(errors) + 1] <- err
         ler_step[length(ler_step) + 1] <- i
