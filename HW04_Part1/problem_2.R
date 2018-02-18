@@ -41,23 +41,26 @@ num_outputs <- c(1, 10, 1)
 weights <- list()
 biases <- list()
 
+a <- -0.1
+b <- 0.1
+
 for (i in 1:num_layers) {
     
-    weights[[i]] <- matrix(runif(num_outputs[i] * num_outputs[i + 1], min = -0.1, max = 0.1), nrow = num_outputs[i + 1], ncol = num_outputs[i])
-    biases[[i]] <- matrix(runif(num_outputs[i] * num_outputs[i + 1], min = -0.1, max = 0.1), nrow = num_outputs[i + 1], ncol = 1)
+    weights[[i]] <- (b - a) * matrix(runif(num_outputs[i] * num_outputs[i + 1], min = -0.1, max = 0.1), nrow = num_outputs[i + 1], ncol = num_outputs[i]) + a
+    biases[[i]] <- (b -a) * matrix(runif(num_outputs[i] * num_outputs[i + 1], min = -0.1, max = 0.1), nrow = num_outputs[i + 1], ncol = 1) + a
     
 }
 
 ## Import the training data
 
 x <- runif(n = 200, min = 0.1, max = 1)
-y <- 1/x
+y <- (1/x)/10
 bias <- 1
 
 ## Initialize the training parameters
 
-n <- 250
-ler_rate <- 0.0005
+n <- 1000
+ler_rate <- 0.005
 
 ## Set the epoch size
 
@@ -88,21 +91,20 @@ for (i in 1:n) {
         
         if (j == 1) {
             
-            back_pass(num_layers, weights, biases, x_pat, y_pat, trans_func, der_trans_func)
-            
-            gradient_biases_sum <- gradient_biases
-            gradient_weights_sum <- gradient_weights
+            gradient_weights_sum <- back_pass(num_layers, weights, biases, x_pat, y_pat, trans_func, der_trans_func)[[1]]
+            gradient_biases_sum <- back_pass(num_layers, weights, biases, x_pat, y_pat, trans_func, der_trans_func)[[2]]
             
         } else {
             
-            back_pass(num_layers, weights, biases, x_pat, y_pat, trans_func, der_trans_func)
+            gradient_weights <- back_pass(num_layers, weights, biases, x_pat, y_pat, trans_func, der_trans_func)[[1]]
+            gradient_biases <- back_pass(num_layers, weights, biases, x_pat, y_pat, trans_func, der_trans_func)[[2]]
             
-        }
-        
-        for (k in 1:num_layers) {
-            
-            gradient_biases_sum[[k]] <- gradient_biases_sum[[k]] + gradient_biases[[k]]
-            gradient_weights_sum[[k]] <- gradient_weights_sum[[k]] + gradient_weights[[k]]
+            for (k in 1:num_layers) {
+                
+                gradient_biases_sum[[k]] <- gradient_biases_sum[[k]] + gradient_biases[[k]]
+                gradient_weights_sum[[k]] <- gradient_weights_sum[[k]] + gradient_weights[[k]]
+                
+            }
             
         }
         
@@ -119,14 +121,17 @@ for (i in 1:n) {
     
     if (TRUE == TRUE) {
         
-        err <- rms_error(D = t(y),
-                         y = forward_pass(num_layers, weights, biases, matrix(x, nrow = 1), trans_func)[[num_layers]])
+        x_test <- runif(n = 200, min = 0.1, max = 1)
+        y_test <- (1/x_test)/10
+        
+        err <- rms_error(D = t(y_test),
+                         y = forward_pass(num_layers, weights, biases, matrix(x_test, nrow = 1), trans_func)[[num_layers]])
         
         errors[length(errors) + 1] <- err
         ler_step[length(ler_step) + 1] <- i
         # input_vecs[[length(input_vecs) + 1]] <- x_pat
-        # expected_outputs[length(expected_outputs) + 1] <- y_pat
-        # actual_outputs[length(actual_outputs) + 1] <- forward_pass(num_layers, weights, biases, matrix(x, nrow = 1), trans_func)[[num_layers]]
+        # expected_outputs[length(expected_outputs) + 1] <- test_y
+        # actual_outputs[length(actual_outputs) + 1] <- forward_pass(num_layers, weights, biases, matrix(test_x, nrow = 1), trans_func)[[num_layers]] * 10
         
     }
     
@@ -134,9 +139,9 @@ for (i in 1:n) {
 
 ## Plot the RMSE over time
 
-# ggplot() +
-#     geom_line(aes(x = ler_step, y = errors)) +
-#     labs(x = "Learning Step", y = "RMS Error", title = "RMS Error per Learning Step")
+ggplot() +
+    geom_line(aes(x = ler_step, y = errors)) +
+    labs(x = "Learning Step", y = "RMS Error", title = "RMS Error per Learning Step")
 
 ## Plot the training desired vs. actual outputs
 

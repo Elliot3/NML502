@@ -42,7 +42,9 @@ back_pass <- function(num_layers, weights, biases, x_pat, y_pat, trans_func, der
     
     ## Save the gradients to the global environment
     
-    gradient_weights <<- gradient_weights
-    gradient_biases <<- gradient_biases
+    # gradient_weights <<- gradient_weights
+    # gradient_biases <<- gradient_biases
+    
+    return(list(gradient_weights, gradient_biases))
     
 }

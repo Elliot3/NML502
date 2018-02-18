@@ -83,7 +83,8 @@ for (i in 1:n) {
         
         ## Perform the back propagation for pattern j
         
-        back_pass(num_layers, weights, biases, x_pat, y_pat, trans_func, der_trans_func)
+        gradient_weights <- back_pass(num_layers, weights, biases, x_pat, y_pat, trans_func, der_trans_func)[[1]]
+        gradient_biases <- back_pass(num_layers, weights, biases, x_pat, y_pat, trans_func, der_trans_func)[[2]]
         
         for (k in 1:num_layers) {
             
