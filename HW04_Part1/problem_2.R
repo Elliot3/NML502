@@ -63,7 +63,7 @@ y_test <- (1/x_test)/10
 
 ## Initialize the training parameters
 
-n <- 1000
+n <- 500
 ler_rate <- 0.0015
 
 ## Set the epoch size
