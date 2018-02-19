@@ -26,12 +26,11 @@ der_trans_func <- function(x) {
 
 ## Create a container for the errors and learning steps
 
-errors <- numeric()
+errors_train <- numeric()
+errors_test <- numeric()
 ler_step <- numeric()
 input_vecs <- list()
-expected_outputs <- numeric()
-actual_outputs <- numeric()
-
+output_diffs <- numeric()
 
 ## Initialize the network
 
@@ -57,10 +56,15 @@ x <- runif(n = 200, min = 0.1, max = 1)
 y <- (1/x)/10
 bias <- 1
 
+## Import the testing data
+
+x_test <- seq(from = 0.109, t = 1, by = 0.009)
+y_test <- (1/x_test)/10
+
 ## Initialize the training parameters
 
 n <- 1000
-ler_rate <- 0.005
+ler_rate <- 0.0015
 
 ## Set the epoch size
 
@@ -86,8 +90,8 @@ for (i in 1:n) {
     
     for (j in 1:K) {
         
-        x_pat <- as.matrix(x[j])
-        y_pat <- as.matrix(y[j])
+        x_pat <<- as.matrix(x[j])
+        y_pat <<- as.matrix(y[j])
         
         if (j == 1) {
             
@@ -121,14 +125,20 @@ for (i in 1:n) {
     
     if (TRUE == TRUE) {
         
-        err <- rms_error(D = t(y),
-                         y = forward_pass(num_layers, weights, biases, matrix(x, nrow = 1), trans_func)[[num_layers]])
+        err_train <- rms_error_batch(D = t(y),
+                                     y = forward_pass(num_layers, weights, biases, matrix(x, nrow = 1), trans_func)[[num_layers]])
+        errors_train[length(errors_train) + 1] <- err_train
         
-        errors[length(errors) + 1] <- err
+        err_test <- rms_error_batch(D = t(y_test),
+                                    y = forward_pass(num_layers, weights, biases, matrix(x_test, nrow = 1), trans_func)[[num_layers]])
+        errors_test[length(errors_test) + 1] <- err_test
+        
         ler_step[length(ler_step) + 1] <- i
-        # input_vecs[[length(input_vecs) + 1]] <- x_pat
-        # expected_outputs[length(expected_outputs) + 1] <- test_y
-        # actual_outputs[length(actual_outputs) + 1] <- forward_pass(num_layers, weights, biases, matrix(test_x, nrow = 1), trans_func)[[num_layers]] * 10
+        
+        y_expected <- forward_pass(num_layers, weights, biases, x_pat, trans_func)[[num_layers]]
+        y_actual <- y_pat
+        
+        output_diffs[i] <- y_expected - y_actual
         
     }
     
@@ -137,14 +147,15 @@ for (i in 1:n) {
 ## Plot the RMSE over time
 
 ggplot() +
-    geom_line(aes(x = ler_step, y = errors)) +
-    labs(x = "Learning Step", y = "RMS Error", title = "RMS Error per Learning Step")
+    geom_line(aes(x = ler_step, y = errors_test), color = "red") +
+    geom_line(aes(x = ler_step, y = errors_train), color = "blue") +
+    labs(x = "Learning Step", y = "RMS Error", title = "RMS Error per Learning Step", subtitle = "Blue - Training, Red - Testing")
 
-## Plot the training desired vs. actual outputs
+## Plot the desired vs. actual outputs for test and training
 
-# ggplot() +
-#     geom_line(aes(x = ler_step, y = expected_outputs - actual_outputs)) +
-#     labs(x = "Learning Step", y = "Difference, Desired vs. Actual", title = "Desired vs. Actual Output per Learning Step")
+ggplot() +
+    geom_line(aes(x = ler_step, y = output_diffs), color = "blue") +
+    labs(x = "Learning Step", y = "Difference, Desired vs. Actual", title = "Desired vs. Actual Output per Learning Step", subtitle = "Blue - Training, Red - Testing")
 
 
 

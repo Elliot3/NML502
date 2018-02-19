@@ -6,3 +6,10 @@ rms_error <- function(D, y) {
     return(rms)
     
 }
+
+rms_error_batch <- function(D, y) {
+    
+    rms <- sqrt(sum((D - y)^2)/100)
+    return(rms)
+    
+}
