@@ -33,6 +33,8 @@ input_vecs <- list()
 output_diffs_train <- numeric()
 output_diffs_test <- numeric()
 
+
+
 ## Initialize the network
 
 num_layers <- 2
@@ -66,6 +68,9 @@ y_test <- (1/x_test)/10
 
 n <- 500
 ler_rate <- 0.0015
+
+y_actual_train_2 <- matrix(, nrow = n, ncol = length(x))
+y_actual_test_2 <- matrix(, nrow = n, ncol = length(x_test))
 
 ## Set the epoch size
 
@@ -133,6 +138,9 @@ for (i in 1:n) {
         err_test <- rms_error_batch(D = t(y_test),
                                     y = forward_pass(num_layers, weights, biases, matrix(x_test, nrow = 1), trans_func)[[num_layers]])
         errors_test[length(errors_test) + 1] <- err_test
+
+        y_actual_test_2[i,1:length(x_test)] <- forward_pass(num_layers, weights, biases, matrix(x_test, nrow = 1), trans_func)[[num_layers]]
+        y_actual_train_2[i,1:length(x)] <- forward_pass(num_layers, weights, biases, matrix(x, nrow = 1), trans_func)[[num_layers]]
         
         ler_step[length(ler_step) + 1] <- i
         
@@ -156,7 +164,7 @@ for (i in 1:n) {
 ggplot() +
     geom_line(aes(x = ler_step, y = errors_test), color = "red") +
     geom_line(aes(x = ler_step, y = errors_train), color = "blue") +
-    labs(x = "Learning Step", y = "RMS Error", title = "RMS Error per Learning Step", subtitle = "Blue - Training, Red - Testing")
+    labs(x = "Learning Step", y = "RMS Error", title = "Learning history", subtitle = "Blue - Training, Red - Testing")
 
 ## Plot the desired vs. actual outputs for test and training
 
@@ -164,3 +172,11 @@ ggplot() +
     geom_line(aes(x = ler_step, y = output_diffs_train), color = "blue") +
     geom_line(aes(x = ler_step, y = output_diffs_test), color = "red") +
     labs(x = "Learning Step", y = "Difference, Desired vs. Actual", title = "Desired vs. Actual Output per Learning Step", subtitle = "Blue - Training, Red - Testing")
+
+
+ggplot() +
+    geom_line(aes(x = x_test, y = y_test), color = "blue") +
+    geom_line(aes(x = x, y = y_actual_train_2[200,1:200]), color = "green") +
+    geom_line(aes(x = x_test, y = y_actual_test_2[200,1:100]), color = "red") +
+    labs(x = "x-axis ", y = "scaled y axis", title = "Desired vs. Actual Output", subtitle = "Blue - true line, Green - training output, Red - Testing output ")
+
