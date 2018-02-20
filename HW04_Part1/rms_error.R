@@ -9,7 +9,7 @@ rms_error <- function(D, y) {
 
 rms_error_batch <- function(D, y) {
     
-    rms <- sqrt(sum((D - y)^2)/100)
+    rms <- sqrt(sum((D - y)^2)/length(y))
     return(rms)
     
 }
