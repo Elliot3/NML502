@@ -1,3 +1,7 @@
+## Load in necessary packages
+
+library(ggplot2)
+
 ## Load in the necessary functions
 
 source("~/Documents/Rice_University/Spring_2018/NML502/HW04_Part2/bp_learn.R")
@@ -8,11 +12,11 @@ bp_recall <- function() {
     
     ## Number of iterations
     
-    num_iter <- 500
+    num_iter <- 1000
     
     ## Learning rate for each layer
     
-    ler_rate <- c(0.018, 0.003)
+    ler_rate <- c(0.005, 0.00005)
     
     ## Batch size
     
@@ -63,7 +67,18 @@ bp_recall <- function() {
     
     ## Train the network
     
-    bp_learn(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, num_outputs, num_layers, x, y, 0.1)
+    results <- bp_learn(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, num_outputs, num_layers, x, y, 0.00000001)
+    
+    weights <- results[[1]]
+    biases <- results[[2]]
+    errors <- results[[3]]
+    ler_step <- results[[4]]
+    
+    ## Plot the RMSE over time
+    
+    ggplot() +
+        geom_line(aes(x = ler_step, y = errors), color = "blue") +
+        labs(x = "Learning Step", y = "RMS Error", title = "RMS Error per Learning Step", subtitle = "Blue - Training, Red - Testing")
     
 }
 

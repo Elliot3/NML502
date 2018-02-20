@@ -101,8 +101,8 @@ bp_learn <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, n
             
             ## Store the changes
             
-            weights_prev_delta[[l]] <- -ler_rate[l] * gradient_weights_sum[[i]]
-            biases_prev_delta[[l]] <- -ler_rate[l] * gradient_biases_sum[[i]]
+            weights_prev_delta[[l]] <- -ler_rate[l] * gradient_weights_sum[[l]]
+            biases_prev_delta[[l]] <- -ler_rate[l] * gradient_biases_sum[[l]]
             
         }
         
@@ -112,7 +112,7 @@ bp_learn <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, n
         
         ## Calculate the error
         
-        errors[i] <- rms_error_batch(y_pat, y_train)
+        errors[i] <- rms_error_batch(y, y_train)
         
         ## Store the iteration number
         
@@ -127,6 +127,10 @@ bp_learn <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, n
         }
     
     }
+    
+    ## Return the necesssary network information
+    
+    return(list(weights, biases, errors, ler_step))
         
 }
     
