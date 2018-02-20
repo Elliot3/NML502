@@ -125,24 +125,11 @@ bp_learn <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, n
             break
             
         }
-    
+        
     }
     
     ## Return the necesssary network information
     
     return(list(weights, biases, errors, ler_step))
-        
+    
 }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
