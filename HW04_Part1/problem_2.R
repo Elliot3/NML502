@@ -30,7 +30,8 @@ errors_train <- numeric()
 errors_test <- numeric()
 ler_step <- numeric()
 input_vecs <- list()
-output_diffs <- numeric()
+output_diffs_train <- numeric()
+output_diffs_test <- numeric()
 
 ## Initialize the network
 
@@ -135,10 +136,16 @@ for (i in 1:n) {
         
         ler_step[length(ler_step) + 1] <- i
         
-        y_expected <- forward_pass(num_layers, weights, biases, x_pat, trans_func)[[num_layers]]
-        y_actual <- y_pat
+        y_expected_train <- y_pat
+        y_actual_train <- forward_pass(num_layers, weights, biases, x_pat, trans_func)[[num_layers]]
         
-        output_diffs[i] <- y_expected - y_actual
+        rand_ind <- sample(x = 1:100, size = 1)
+        
+        y_expected_test <- y_test[rand_ind]
+        y_actual_test <- forward_pass(num_layers, weights, biases, matrix(x_test[rand_ind], nrow = 1), trans_func)[[num_layers]]
+        
+        output_diffs_train[i] <- y_expected_train - y_actual_train
+        output_diffs_test[i] <- y_expected_test - y_actual_test
         
     }
     
@@ -154,18 +161,6 @@ ggplot() +
 ## Plot the desired vs. actual outputs for test and training
 
 ggplot() +
-    geom_line(aes(x = ler_step, y = output_diffs), color = "blue") +
+    geom_line(aes(x = ler_step, y = output_diffs_train), color = "blue") +
+    geom_line(aes(x = ler_step, y = output_diffs_test), color = "red") +
     labs(x = "Learning Step", y = "Difference, Desired vs. Actual", title = "Desired vs. Actual Output per Learning Step", subtitle = "Blue - Training, Red - Testing")
-
-
-
-
-
-
-
-
-
-
-
-
-
