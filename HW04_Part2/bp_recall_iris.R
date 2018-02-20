@@ -55,8 +55,8 @@ bp_recall_iris <- function() {
     
     train_data_final <- cbind(train_attr, train_cats)
     
-    train_x <- transpose(train_data_final[, 1:4])
-    train_y <- transpose(train_data_final[, 5:7])
+    train_x <- t(train_data_final[, 1:4])
+    train_y <- t(train_data_final[, 5:7])
     
     x <- matrix(as.numeric(unlist(train_x)), nrow = nrow(train_x))
     y <- matrix(as.numeric(unlist(train_y)), nrow = nrow(train_y))

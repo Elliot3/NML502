@@ -52,12 +52,12 @@ bp_learn_iris <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_fu
         
         ## Randomly permute the indices
         
-        inds <- sample(1:length(x))
+        inds <- sample(1:dim(x)[2])
         
         ## Perform the permutation
         
-        x <- x[inds]
-        y <- y[inds]
+        x <- matrix(x[, inds], nrow = 4)
+        y <- matrix(y[, inds], nrow = 3)
         
         ## Create the gradient containers
         
@@ -66,8 +66,8 @@ bp_learn_iris <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_fu
         
         for (j in 1:K) {
             
-            x_pat <<- as.matrix(x[j])
-            y_pat <<- as.matrix(y[j])
+            x_pat <<- as.matrix(x[, j], nrow = 4)
+            y_pat <<- as.matrix(y[, j], nrow = 3)
             
             if (j == 1) {
                 
@@ -108,7 +108,7 @@ bp_learn_iris <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_fu
         
         ## Perform the forward pass
         
-        y_train <- forward_pass(num_layers, weights, biases, matrix(x, nrow = 1), trans_func)[[num_layers]]
+        y_train <- forward_pass(num_layers, weights, biases, x, trans_func)[[num_layers]]
         
         y_max <- max(y_train)
         

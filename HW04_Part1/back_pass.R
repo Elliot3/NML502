@@ -13,7 +13,7 @@ back_pass <- function(num_layers, weights, biases, x_pat, y_pat, trans_func, der
     
     ## Get the error of the last layer
     
-    delta <- (activations[[num_layers]] - y_pat) %*% der_trans_func(activations[[num_layers]])
+    delta <- (activations[[num_layers]] - y_pat) * der_trans_func(activations[[num_layers]])
     
     ## Set the gradients of the last layer
     
