@@ -43,13 +43,12 @@ num_outputs <- c(1, 10, 1)
 weights <- list()
 biases <- list()
 
-a <- -0.1
-b <- 0.1
-
 for (i in 1:num_layers) {
     
-    weights[[i]] <- (b - a) * matrix(runif(num_outputs[i] * num_outputs[i + 1], min = -0.1, max = 0.1), nrow = num_outputs[i + 1], ncol = num_outputs[i]) + a
-    biases[[i]] <- (b -a) * matrix(runif(num_outputs[i] * num_outputs[i + 1], min = -0.1, max = 0.1), nrow = num_outputs[i + 1], ncol = 1) + a
+    weights[[i]] <- matrix(runif(num_outputs[i] * num_outputs[i + 1],
+                                 min = -0.1, max = 0.1), nrow = num_outputs[i + 1], ncol = num_outputs[i])
+    biases[[i]] <- matrix(runif(num_outputs[i] * num_outputs[i + 1],
+                                min = -0.1, max = 0.1), nrow = num_outputs[i + 1], ncol = 1)
     
 }
 
@@ -66,15 +65,12 @@ y_test <- (1/x_test)/10
 
 ## Initialize the training parameters
 
-n <- 500
-ler_rate <- 0.0015
-
-y_actual_train_2 <- matrix(, nrow = n, ncol = length(x))
-y_actual_test_2 <- matrix(, nrow = n, ncol = length(x_test))
+n <- 20000
+ler_rate <- 0.01
 
 ## Set the epoch size
 
-K <- 200
+K <- 20
 
 ## Learn the weights via batch learning
 
@@ -129,7 +125,17 @@ for (i in 1:n) {
     
     ## Record the error values for each training step
     
-    if (TRUE == TRUE) {
+    if (i %% 100 == 0) {
+        
+        if (exists("iter")) {
+            iter <- iter + 1
+        } else {
+            iter <- 1
+        }
+        
+        ler_step[length(ler_step) + 1] <- i
+        
+        
         
         err_train <- rms_error_batch(D = t(y),
                                      y = forward_pass(num_layers, weights, biases, matrix(x, nrow = 1), trans_func)[[num_layers]])
@@ -138,33 +144,32 @@ for (i in 1:n) {
         err_test <- rms_error_batch(D = t(y_test),
                                     y = forward_pass(num_layers, weights, biases, matrix(x_test, nrow = 1), trans_func)[[num_layers]])
         errors_test[length(errors_test) + 1] <- err_test
-
-        y_actual_test_2[i,1:length(x_test)] <- forward_pass(num_layers, weights, biases, matrix(x_test, nrow = 1), trans_func)[[num_layers]]
-        y_actual_train_2[i,1:length(x)] <- forward_pass(num_layers, weights, biases, matrix(x, nrow = 1), trans_func)[[num_layers]]
         
-        ler_step[length(ler_step) + 1] <- i
+        
         
         y_expected_train <- y_pat
         y_actual_train <- forward_pass(num_layers, weights, biases, x_pat, trans_func)[[num_layers]]
         
-        rand_ind <- sample(x = 1:100, size = 1)
+        rand_ind <- sample(x = 1:length(x_test), size = 1)
         
         y_expected_test <- y_test[rand_ind]
         y_actual_test <- forward_pass(num_layers, weights, biases, matrix(x_test[rand_ind], nrow = 1), trans_func)[[num_layers]]
         
-        output_diffs_train[i] <- y_expected_train - y_actual_train
-        output_diffs_test[i] <- y_expected_test - y_actual_test
+        output_diffs_train[length(output_diffs_train) + 1] <- y_expected_train - y_actual_train
+        output_diffs_test[length(output_diffs_test) + 1] <- y_expected_test - y_actual_test
         
     }
     
 }
+
+y_output <- forward_pass(num_layers, weights, biases, matrix(x, nrow = 1), trans_func)[[num_layers]]
 
 ## Plot the RMSE over time
 
 ggplot() +
     geom_line(aes(x = ler_step, y = errors_test), color = "red") +
     geom_line(aes(x = ler_step, y = errors_train), color = "blue") +
-    labs(x = "Learning Step", y = "RMS Error", title = "Learning history", subtitle = "Blue - Training, Red - Testing")
+    labs(x = "Learning Step", y = "RMS Error", title = "Learning History", subtitle = "Blue - Training, Red - Testing")
 
 ## Plot the desired vs. actual outputs for test and training
 
@@ -173,10 +178,10 @@ ggplot() +
     geom_line(aes(x = ler_step, y = output_diffs_test), color = "red") +
     labs(x = "Learning Step", y = "Difference, Desired vs. Actual", title = "Desired vs. Actual Output per Learning Step", subtitle = "Blue - Training, Red - Testing")
 
+## Plot the actual function vs. the learned function
 
 ggplot() +
     geom_line(aes(x = x_test, y = y_test), color = "blue") +
-    geom_line(aes(x = x, y = y_actual_train_2[200,1:200]), color = "green") +
-    geom_line(aes(x = x_test, y = y_actual_test_2[200,1:100]), color = "red") +
-    labs(x = "x-axis ", y = "scaled y axis", title = "Desired vs. Actual Output", subtitle = "Blue - true line, Green - training output, Red - Testing output ")
+    geom_line(aes(x = x, y = y_output), color = "red") +
+    labs(x = "x value", y = "Scaled y value", title = "Desired vs. Actual Output", subtitle = "Blue - True Function, Red - Learned Function")
 

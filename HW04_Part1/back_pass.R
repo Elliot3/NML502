@@ -26,7 +26,7 @@ back_pass <- function(num_layers, weights, biases, x_pat, y_pat, trans_func, der
         
         delta <- (t(weights[[i + 1]]) %*% delta) * der_trans_func(activations[[i]])
         
-        gradient_biases <- delta
+        gradient_biases[[i]] <- delta
         
         if (i != 1) {
             
