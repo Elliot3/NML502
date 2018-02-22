@@ -13,15 +13,15 @@ bp_recall <- function() {
     
     ## Number of iterations
     
-    num_iter <- 1000
+    num_iter <- 5000
     
     ## Learning rate for each layer
     
-    ler_rate <- c(0.005, 0.00005)
+    ler_rate <- c(0.05, 0.0005)
     
     ## Batch size
     
-    K <- 10
+    K <- 20
     
     ## Update the learning rate to match the batch size
     
@@ -29,7 +29,7 @@ bp_recall <- function() {
     
     ## Set the forget rate
     
-    alpha <- c(0.004, 0.004)
+    alpha <- c(0.4, 0.4)
     
     ## Define the hyperbolic tangent function
     
@@ -61,6 +61,11 @@ bp_recall <- function() {
     x <- runif(n = 200, min = 0.1, max = 1)
     y <- f(x)/10
     
+    ## Import the testing data
+    
+    x_test <- seq(from = 0.109, t = 1, by = 0.009)
+    y_test <- f(x_test)/10
+    
     ## Set up the network architecture
     
     num_outputs <- c(1, 10, 1)
@@ -68,39 +73,39 @@ bp_recall <- function() {
     
     ## Train the network
     
-    train_results <- bp_learn(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, num_outputs, num_layers, x, y, 0.00000001)
+    train_results <- bp_learn(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, num_outputs, num_layers, x, y, 0.00000001, x_test, y_test)
+    
+    # Return the final network components
     
     weights <- train_results[[1]]
     biases <- train_results[[2]]
-    errors <- train_results[[3]]
-    ler_step <- train_results[[4]]
-    
-    ## Test the data
-    
-    test_results <<- network_test(weights, biases, num_layers, f, trans_func)
-    
-    x_test <- test_results[[1]]
-    y_test_output <- test_results[[2]]
-    test_errors <- test_results[[3]]
+    ler_step <- train_results[[3]]
+    errors_train <- train_results[[4]]
+    errors_test <- train_results[[5]]
+    output_diffs_train <- train_results[[6]]
+    output_diffs_test <- train_results[[7]]
+    y_output <- train_results[[8]]
     
     ## Plot the RMSE over time
     
     ggplot() +
-        geom_line(aes(x = ler_step, y = errors), color = "blue") +
-        labs(x = "Learning Step", y = "RMS Error", title = "RMS Error per Learning Step", subtitle = "Blue - Training, Red - Testing")
+        geom_line(aes(x = ler_step, y = errors_test), color = "red") +
+        geom_line(aes(x = ler_step, y = errors_train), color = "blue") +
+        labs(x = "Learning Step", y = "RMS Error", title = "Learning History", subtitle = "Blue - Training, Red - Testing")
     
-    ## Plot the 1/x function vs the result
-    
-    x_func <- seq(from = 0.1, to = 1, by = 0.005)
-    
-    ggplot() +
-        geom_line(aes(x = x_func, y = f(x_func))) +
-        geom_line(aes(x = x_test, y_test_output))
-    
-    ## Plot the test errors
+    ## Plot the desired vs. actual outputs for test and training
     
     ggplot() +
-        geom_line(aes(x = x_test, y = test_errors)) 
+        geom_line(aes(x = ler_step, y = output_diffs_train), color = "blue") +
+        geom_line(aes(x = ler_step, y = output_diffs_test), color = "red") +
+        labs(x = "Learning Step", y = "Difference, Desired vs. Actual", title = "Desired vs. Actual Output per Learning Step", subtitle = "Blue - Training, Red - Testing")
+    
+    ## Plot the actual function vs. the learned function
+    
+    ggplot() +
+        geom_line(aes(x = x_test, y = y_test), color = "blue") +
+        geom_line(aes(x = x, y = y_output), color = "red") +
+        labs(x = "X Value", y = "Scaled Y Value", title = "Desired vs. Actual Output", subtitle = "Blue - True Function, Red - Learned Function")
     
 }
 

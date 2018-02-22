@@ -183,5 +183,5 @@ ggplot() +
 ggplot() +
     geom_line(aes(x = x_test, y = y_test), color = "blue") +
     geom_line(aes(x = x, y = y_output), color = "red") +
-    labs(x = "x value", y = "Scaled y value", title = "Desired vs. Actual Output", subtitle = "Blue - True Function, Red - Learned Function")
+    labs(x = "X Value", y = "Scaled Y Value", title = "Desired vs. Actual Output", subtitle = "Blue - True Function, Red - Learned Function")
 

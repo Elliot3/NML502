@@ -6,7 +6,7 @@ source("~/Documents/Rice_University/Spring_2018/NML502/HW04_Part1/rms_error.R")
 
 ## Define the back propogation learning function
 
-bp_learn <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, num_outputs, num_layers, x, y, tol) {
+bp_learn <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, num_outputs, num_layers, x, y, tol, x_test, y_test) {
     
     ## Set the sixe of the inputs
     
@@ -14,8 +14,11 @@ bp_learn <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, n
     
     ## Container for the errors and iteration number
     
-    errors <- numeric()
+    errors_train <- numeric()
+    errors_test <- numeric()
     ler_step <- numeric()
+    output_diffs_train <- numeric()
+    output_diffs_test <- numeric()
     
     ## Containers for the weights and biases
     
@@ -31,13 +34,12 @@ bp_learn <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, n
     
     for (i in 1:num_layers) {
         
-        a <- (-1)/sqrt(num_outputs[i])
-        b <- (-1)/sqrt(num_outputs[i])
-        
         ## Create the weights
         
-        weights[[i]] <- (b - a) * matrix(runif(num_outputs[i] * num_outputs[i + 1], min = -0.1, max = 0.1), nrow = num_outputs[i + 1], ncol = num_outputs[i]) + a
-        biases[[i]] <- (b -a) * matrix(runif(num_outputs[i] * num_outputs[i + 1], min = -0.1, max = 0.1), nrow = num_outputs[i + 1], ncol = 1) + a
+        weights[[i]] <- matrix(runif(num_outputs[i] * num_outputs[i + 1],
+                                     min = -0.1, max = 0.1), nrow = num_outputs[i + 1], ncol = num_outputs[i])
+        biases[[i]] <- matrix(runif(num_outputs[i] * num_outputs[i + 1],
+                                    min = -0.1, max = 0.1), nrow = num_outputs[i + 1], ncol = 1)
         
         ## Initialize the previous deltas
         
@@ -106,23 +108,54 @@ bp_learn <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, n
             
         }
         
-        ## Perform the forward pass
+        ## Record the error values for each training step
         
-        y_train <- forward_pass(num_layers, weights, biases, matrix(x, nrow = 1), trans_func)[[num_layers]]
-        
-        ## Calculate the error
-        
-        errors[i] <- rms_error_batch(y, y_train)
-        
-        ## Store the iteration number
-        
-        ler_step[i] <- i
-        
-        ## Stop the training if tolerance is met
-        
-        if (errors[i] < tol) {
+        if (i %% 100 == 0) {
             
-            break
+            if (exists("iter")) {
+                iter <- iter + 1
+            } else {
+                iter <- 1
+            }
+            
+            ler_step[length(ler_step) + 1] <- i
+            
+            
+            
+            err_train <- rms_error_batch(D = t(y),
+                                         y = forward_pass(num_layers, weights, biases, matrix(x, nrow = 1), trans_func)[[num_layers]])
+            errors_train[length(errors_train) + 1] <- err_train
+            
+            err_test <- rms_error_batch(D = t(y_test),
+                                        y = forward_pass(num_layers, weights, biases, matrix(x_test, nrow = 1), trans_func)[[num_layers]])
+            errors_test[length(errors_test) + 1] <- err_test
+            
+            
+            
+            y_expected_train <- y_pat
+            y_actual_train <- forward_pass(num_layers, weights, biases, x_pat, trans_func)[[num_layers]]
+            
+            rand_ind <- sample(x = 1:length(x_test), size = 1)
+            
+            y_expected_test <- y_test[rand_ind]
+            y_actual_test <- forward_pass(num_layers, weights, biases, matrix(x_test[rand_ind], nrow = 1), trans_func)[[num_layers]]
+            
+            output_diffs_train[length(output_diffs_train) + 1] <- y_expected_train - y_actual_train
+            output_diffs_test[length(output_diffs_test) + 1] <- y_expected_test - y_actual_test
+            
+            
+            
+            y_output <- forward_pass(num_layers, weights, biases, matrix(x, nrow = 1), trans_func)[[num_layers]]
+            
+            
+            
+            if (errors_train[iter] < tol) {
+                
+                ## Return the necesssary network information
+                
+                return(list(weights, biases, ler_step, errors_train, errors_test, output_diffs_train, output_diffs_test, y_output))
+                
+            }
             
         }
         
@@ -130,6 +163,6 @@ bp_learn <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, n
     
     ## Return the necesssary network information
     
-    return(list(weights, biases, errors, ler_step))
+    return(list(weights, biases, ler_step, errors_train, errors_test, output_diffs_train, output_diffs_test, y_output))
     
 }
