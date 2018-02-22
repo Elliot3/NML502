@@ -60,7 +60,7 @@ grid.raster(img)
 
 ### Conclusions
 
-We had some fairly good results on this problem. In regards to our learning history, our training converged to a RMSE of just under 0.05 at Training Steps, while the testing converged to just about 0.0625; we felt that this was a great result. Then when we compare the difference of our expected result and our recalled result for both training and testing, we see that we are slowly converging to zero. However, on a semi-regular cadence there seems to be spikes in difference that are corrected shortly after. Our memory does an okay job of replicating the function, however it is not perfect, but we are satisfied with the result.
+We had some fairly good results on this problem. In regards to our learning history, our training converged to a RMSE of just under 0.05 at 20,000 Training Steps, while the testing converged to just about 0.0625; we felt that this was a great result. Then when we compare the difference of our expected result and our recalled result for both training and testing, we see that we are slowly converging to zero. However, on a semi-regular cadence there seems to be spikes in difference that are corrected shortly after. Our memory does an okay job of replicating the function, however it is not perfect, but we are satisfied with the result.
 
 # Problem 3
 
@@ -110,7 +110,7 @@ grid.raster(img)
 
 ### Conclusions
 
-TBD
+We had some interesting results on this problem. In regards to our learning history, our training converged to a RMSE of just about 0.02 at 5,000 Training Steps, while the testing converged to just about 0.01; this is curious that the error for our testing was lower than our training. Then when we compare the difference of our expected result and our recalled result for both training and testing, we get an excellent result; both testing and training are hovering around 0 and the spikes are minimal. Our memory does an excellent job of replicating the function, we can almost completely lay our recalled function onto the actual function, this is a great result!
 
 ### Network 2 Details
 
@@ -158,7 +158,7 @@ grid.raster(img)
 
 ### Conclusions
 
-TBD
+We again had some very positive, yet curious, results on this problem. In regards to our learning history, our training and testing converged to the same values as our last network, trainin to a RMSE of just about 0.02 at 5,000 Training Steps and testing to just about 0.01; this is curious that the error for our testing was lower than our training, same as with the last network. Then when we compare the difference of our expected result and our recalled result for both training and testing, we get another excellent result which we will not go into further as we already clearly described it in regards to our previous network. Again, as well, our memory does an excellent job of replicating the function, we can almost completely lay our recalled function onto the actual function.
 
 ### Network 3 Details
 
@@ -206,9 +206,11 @@ grid.raster(img)
 
 ### Conclusions
 
-TBD
+Here is where things got a little interesting in our network. In regards to our learning history, our training and testing converged to values between 0.05 and 0.075. We can see that the learning curve is much more smooth, we attribute this to the increae in batch size. Again, curiously our testing error is lower than our training. Then when we compare the difference of our expected result and our recalled result for both training and testing, we got very poor results. While they do hover around 0, there are many spike that shows a lot of volatility. This time, our memory does a very poor job of replicating the function, it doesn't seem to fit very well at all; this is without a adoubt our worst network.
 
 ## Overall Conclusions
+
+Overall, I think our best network was either network 1 or network 2; they were actually quite indistinguishable in many ways. However, network 3 does not compare as well to the other two and we would not consider it against the other two.
 
 # Problem 4
 
@@ -244,8 +246,7 @@ grid.raster(img)
 
 ### Conclusions
 
-TBD
-
+We got excellent results on both the training and testing data! Very quickly, we were able to attain a 100% hit rate of 150 with both the testing and training data at around 1,000 learning steps! we are very happy with this result. We experimented with many different buildings, particularly tweaking the learning rate, number of PEs in the hidden layer and the batch size; however this network gave us the best result!
 
 
 

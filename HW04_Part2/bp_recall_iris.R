@@ -102,20 +102,6 @@ bp_recall_iris <- function() {
         geom_line(aes(x = ler_step, y = errors_test), color = "red") +
         labs(x = "Learning Step", y = "RMS Error", title = "Learning History", subtitle = "Blue - Training, Red - Testing")
     
-    # ## Plot the desired vs. actual outputs for test and training
-    # 
-    # ggplot() +
-    #     geom_line(aes(x = ler_step, y = output_diffs_train), color = "blue") +
-    #     geom_line(aes(x = ler_step, y = output_diffs_test), color = "red") +
-    #     labs(x = "Learning Step", y = "Difference, Desired vs. Actual", title = "Desired vs. Actual Output per Learning Step", subtitle = "Blue - Training, Red - Testing")
-    # 
-    # ## Plot the actual function vs. the learned function
-    # 
-    # ggplot() +
-    #     geom_line(aes(x = x_test, y = y_test), color = "blue") +
-    #     geom_line(aes(x = x, y = y_output), color = "red") +
-    #     labs(x = "X Value", y = "Scaled Y Value", title = "Desired vs. Actual Output", subtitle = "Blue - True Function, Red - Learned Function")
-    
 }
 
 
