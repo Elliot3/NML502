@@ -5,7 +5,6 @@ library(ggplot2)
 ## Load in the necessary functions
 
 source("~/Documents/Rice_University/Spring_2018/NML502/HW04_Part2/bp_learn.R")
-source("~/Documents/Rice_University/Spring_2018/NML502/HW04_Part2/network_test.R")
 
 ## Define the back propogation recall function
 

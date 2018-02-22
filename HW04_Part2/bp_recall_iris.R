@@ -5,7 +5,6 @@ library(ggplot2)
 ## Load in the necessary functions
 
 source("~/Documents/Rice_University/Spring_2018/NML502/HW04_Part2/bp_learn_iris.R")
-# source("~/Documents/Rice_University/Spring_2018/NML502/HW04_Part2/network_test.R")
 
 ## Define the back propogation recall function
 
@@ -55,11 +54,25 @@ bp_recall_iris <- function() {
     
     train_data_final <- cbind(train_attr, train_cats)
     
-    train_x <- t(train_data_final[, 1:4])
-    train_y <- t(train_data_final[, 5:7])
+    x <- t(train_data_final[, 1:4])
+    y <- t(train_data_final[, 5:7])
     
-    x <- matrix(as.numeric(unlist(train_x)), nrow = nrow(train_x))
-    y <- matrix(as.numeric(unlist(train_y)), nrow = nrow(train_y))
+    x <- matrix(as.numeric(unlist(x)), nrow = nrow(x))
+    y <- matrix(as.numeric(unlist(y)), nrow = nrow(y))
+    
+    ## Load in the iris test data
+    
+    test_data <- read.table("~/Documents/Rice_University/Spring_2018/NML502/HW04_Part2/iris-test.txt", skip = 8)
+    test_attr <- test_data[c(TRUE, FALSE), ]
+    test_cats <- test_data[c(FALSE, TRUE), ][ ,2:4]
+    
+    test_data_final <- cbind(test_attr, test_cats)
+    
+    x_test <- t(test_data_final[, 1:4])
+    y_test <- t(test_data_final[, 5:7])
+    
+    x_test <- matrix(as.numeric(unlist(x_test)), nrow = nrow(x_test))
+    y_test <- matrix(as.numeric(unlist(y_test)), nrow = nrow(y_test))
     
     
     ## Set up the network architecture
@@ -69,26 +82,39 @@ bp_recall_iris <- function() {
     
     ## Train the network
     
-    train_results <- bp_learn_iris(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, num_outputs, num_layers, x, y, 0.03)
+    train_results <- bp_learn_iris(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, num_outputs, num_layers, x, y, 0.03, x_test, y_test)
+    
+    # Return the final network components
     
     weights <- train_results[[1]]
     biases <- train_results[[2]]
-    errors <- train_results[[3]]
-    ler_step <- train_results[[4]]
+    ler_step <- train_results[[3]]
+    errors_train <- train_results[[4]]
+    errors_test <- train_results[[5]]
     
-    ## Test the data
     
-    # test_results <<- network_test(weights, biases, num_layers, f, trans_func)
     
-    # x_test <- test_results[[1]]
-    # y_test_output <- test_results[[2]]
-    # test_errors <- test_results[[3]]
-    
+
     ## Plot the RMSE over time
     
     ggplot() +
-        geom_line(aes(x = ler_step, y = errors), color = "blue") +
-        labs(x = "Learning Step", y = "RMS Error", title = "RMS Error per Learning Step", subtitle = "Blue - Training, Red - Testing")
+        geom_line(aes(x = ler_step, y = errors_train), color = "blue") +
+        geom_line(aes(x = ler_step, y = errors_test), color = "red") +
+        labs(x = "Learning Step", y = "RMS Error", title = "Learning History", subtitle = "Blue - Training, Red - Testing")
+    
+    # ## Plot the desired vs. actual outputs for test and training
+    # 
+    # ggplot() +
+    #     geom_line(aes(x = ler_step, y = output_diffs_train), color = "blue") +
+    #     geom_line(aes(x = ler_step, y = output_diffs_test), color = "red") +
+    #     labs(x = "Learning Step", y = "Difference, Desired vs. Actual", title = "Desired vs. Actual Output per Learning Step", subtitle = "Blue - Training, Red - Testing")
+    # 
+    # ## Plot the actual function vs. the learned function
+    # 
+    # ggplot() +
+    #     geom_line(aes(x = x_test, y = y_test), color = "blue") +
+    #     geom_line(aes(x = x, y = y_output), color = "red") +
+    #     labs(x = "X Value", y = "Scaled Y Value", title = "Desired vs. Actual Output", subtitle = "Blue - True Function, Red - Learned Function")
     
 }
 

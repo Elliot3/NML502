@@ -6,7 +6,7 @@ source("~/Documents/Rice_University/Spring_2018/NML502/HW04_Part1/rms_error.R")
 
 ## Define the back propogation learning function
 
-bp_learn_iris <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, num_outputs, num_layers, x, y, tol) {
+bp_learn_iris <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, num_outputs, num_layers, x, y, tol, x_test, y_test) {
     
     ## Set the sixe of the inputs
     
@@ -14,7 +14,8 @@ bp_learn_iris <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_fu
     
     ## Container for the errors and iteration number
     
-    errors <- numeric()
+    errors_train <- numeric()
+    errors_test <- numeric()
     ler_step <- numeric()
     
     ## Containers for the weights and biases
@@ -31,13 +32,12 @@ bp_learn_iris <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_fu
     
     for (i in 1:num_layers) {
         
-        a <- -1/10
-        b <- 1/10
-        
         ## Create the weights
         
-        weights[[i]] <- (b - a) * matrix(runif(num_outputs[i] * num_outputs[i + 1], min = -0.1, max = 0.1), nrow = num_outputs[i + 1], ncol = num_outputs[i]) + a
-        biases[[i]] <- (b -a) * matrix(runif(num_outputs[i] * num_outputs[i + 1], min = -0.1, max = 0.1), nrow = num_outputs[i + 1], ncol = 1) + a
+        weights[[i]] <- matrix(runif(num_outputs[i] * num_outputs[i + 1],
+                                     min = -0.1, max = 0.1), nrow = num_outputs[i + 1], ncol = num_outputs[i])
+        biases[[i]] <- matrix(runif(num_outputs[i] * num_outputs[i + 1],
+                                    min = -0.1, max = 0.1), nrow = num_outputs[i + 1], ncol = 1)
         
         ## Initialize the previous deltas
         
@@ -106,25 +106,42 @@ bp_learn_iris <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_fu
             
         }
         
-        ## Perform the forward pass
+        ## Record the error values for each training step
         
-        y_train <- forward_pass(num_layers, weights, biases, x, trans_func)[[num_layers]]
-        
-        y_max <- max(y_train)
-        
-        ## Calculate the error
-        
-        errors[i] <- sum(sum(abs(y_max - y)))
-        
-        ## Store the iteration number
-        
-        ler_step[i] <- i
-        
-        ## Stop the training if tolerance is met
-        
-        if (errors[i] < 6) {
+        if (i %% 100 == 0) {
             
-            break
+            if (exists("iter")) {
+                iter <- iter + 1
+            } else {
+                iter <- 1
+            }
+            
+            ler_step[length(ler_step) + 1] <- i
+            
+            ## Perform the forward pass on the training data
+            
+            y_train <- forward_pass(num_layers, weights, biases, x, trans_func)[[num_layers]]
+            
+            y_max_train <- max(y_train)
+            
+            ## Perform the forward pass on the training data
+            
+            y_test_out <- forward_pass(num_layers, weights, biases, x_test, trans_func)[[num_layers]]
+            
+            y_max_test <- max(y_test_out)
+            
+            ## Calculate the errors
+            
+            errors_train[iter] <- sum(sum(abs(y_max_train - y)))
+            errors_test[iter] <- sum(sum(abs(y_max_test - y_test)))
+            
+            if (errors_train[iter] < 6) {
+                
+                ## Return the necesssary network information
+                
+                return(list(weights, biases, ler_step, errors_train, errors_test))
+                
+            }
             
         }
         
@@ -132,6 +149,6 @@ bp_learn_iris <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_fu
     
     ## Return the necesssary network information
     
-    return(list(weights, biases, errors, ler_step))
+    return(list(weights, biases, ler_step, errors_train, errors_test))
     
 }
