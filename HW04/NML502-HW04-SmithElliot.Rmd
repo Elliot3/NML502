@@ -1,0 +1,259 @@
+---
+title: "HW04"
+author: "Elliot Smith, Eugen Hruska, Warum Suriyanarayana"
+date: "2/20/2018"
+output: pdf_document
+---
+
+```{r, echo = FALSE}
+
+library(png)
+library(grid)
+
+```
+
+# Problem 2
+
+### Network Details
+
+* Network Parameters
+    * Topology: (1 + 1 bias) - (10 + 1 bias) - 1
+    * Transfer Function: Hyperbolic Tangent (slope = 1)
+* Learning Parameters
+    * Initial Weights: drawn randomly from Uniform[-0.1, 0.1]
+    * Learning Rate: 0.01
+    * Momentum: None
+    * Epoch Size: 20
+    * Stopping Criterion: 20,000 Learning Steps
+    * Error Measure for Stopping Criterion: N/A
+* Input / Output Data, Representation, Scaling:
+    * Number of Training Samples: 200 (drawn randomly from Uniform[0.1, 1.0])
+    * Number of Testing Samples: 100 (drawn randomly from Uniform[0.1, 1.0])
+    * Scaling on Inputs: None
+    * Scaling of Outputs: Dividing by 10
+* Parameters and Error Measures of Performance Evaluation
+    * Error of Function Fit: Root Mean Square Error
+    * Number of Learning Steps Performed: 20,000 Learning Steps
+    * Learning Rate at End: 0.01
+    * Monitoring Frequency: Every 100 Learning Steps
+
+```{r, echo = FALSE}
+
+img <- readPNG("~/Documents/Rice_University/Spring_2018/NML502/HW04/Prob2_Plot1.png")
+grid.raster(img)
+
+```
+
+```{r, echo = FALSE}
+
+img <- readPNG("~/Documents/Rice_University/Spring_2018/NML502/HW04/Prob2_Plot2.png")
+grid.raster(img)
+
+```
+
+```{r, echo = FALSE}
+
+img <- readPNG("~/Documents/Rice_University/Spring_2018/NML502/HW04/Prob2_Plot3.png")
+grid.raster(img)
+
+```
+
+### Conclusions
+
+We had some fairly good results on this problem. In regards to our learning history, our training converged to a RMSE of just under 0.05 at Training Steps, while the testing converged to just about 0.0625; we felt that this was a great result. Then when we compare the difference of our expected result and our recalled result for both training and testing, we see that we are slowly converging to zero. However, on a semi-regular cadence there seems to be spikes in difference that are corrected shortly after. Our memory does an okay job of replicating the function, however it is not perfect, but we are satisfied with the result.
+
+# Problem 3
+
+### Network 1 Details
+
+* Network Parameters
+    * Topology: (1 + 1 bias) - (10 + 1 bias) - 1
+    * Transfer Function: Hyperbolic Tangent (slope = 1)
+* Learning Parameters
+    * Initial Weights: drawn randomly from Uniform[-0.1, 0.1]
+    * Learning Rate: 0.05 and 0.0005
+    * Momentum: 0.4
+    * Epoch Size: 20
+    * Stopping Criterion: 5,000 Learning Steps
+    * Error Measure for Stopping Criterion: N/A
+* Input / Output Data, Representation, Scaling:
+    * Number of Training Samples: 200 (drawn randomly from Uniform[0.1, 1.0])
+    * Number of Testing Samples: 100 (drawn randomly from Uniform[0.1, 1.0])
+    * Scaling on Inputs: None
+    * Scaling of Outputs: Dividing by 10
+* Parameters and Error Measures of Performance Evaluation
+    * Error of Function Fit: Root Mean Square Error
+    * Number of Learning Steps Performed: 5,000 Learning Steps
+    * Learning Rate at End: 0.0005
+    * Monitoring Frequency: Every 100 Learning Steps
+
+```{r, echo = FALSE}
+
+img <- readPNG("~/Documents/Rice_University/Spring_2018/NML502/HW04/Prob3_Plot1.png")
+grid.raster(img)
+
+```
+
+```{r, echo = FALSE}
+
+img <- readPNG("~/Documents/Rice_University/Spring_2018/NML502/HW04/Prob3_Plot2.png")
+grid.raster(img)
+
+```
+
+```{r, echo = FALSE}
+
+img <- readPNG("~/Documents/Rice_University/Spring_2018/NML502/HW04/Prob3_Plot3.png")
+grid.raster(img)
+
+```
+
+### Conclusions
+
+TBD
+
+### Network 2 Details
+
+* Network Parameters
+    * Topology: (1 + 1 bias) - (20 + 1 bias) - 1
+    * Transfer Function: Hyperbolic Tangent (slope = 1)
+* Learning Parameters
+    * Initial Weights: drawn randomly from Uniform[-0.1, 0.1]
+    * Learning Rate: 0.05 and 0.0005
+    * Momentum: 0.04
+    * Epoch Size: 50
+    * Stopping Criterion: 5,000 Learning Steps
+    * Error Measure for Stopping Criterion: N/A
+* Input / Output Data, Representation, Scaling:
+    * Number of Training Samples: 200 (drawn randomly from Uniform[0.1, 1.0])
+    * Number of Testing Samples: 100 (drawn randomly from Uniform[0.1, 1.0])
+    * Scaling on Inputs: None
+    * Scaling of Outputs: Dividing by 10
+* Parameters and Error Measures of Performance Evaluation
+    * Error of Function Fit: Root Mean Square Error
+    * Number of Learning Steps Performed: 5,000 Learning Steps
+    * Learning Rate at End: 0.0005
+    * Monitoring Frequency: Every 100 Learning Steps
+
+```{r, echo = FALSE}
+
+img <- readPNG("~/Documents/Rice_University/Spring_2018/NML502/HW04/Prob3_Plot4.png")
+grid.raster(img)
+
+```
+
+```{r, echo = FALSE}
+
+img <- readPNG("~/Documents/Rice_University/Spring_2018/NML502/HW04/Prob3_Plot5.png")
+grid.raster(img)
+
+```
+
+```{r, echo = FALSE}
+
+img <- readPNG("~/Documents/Rice_University/Spring_2018/NML502/HW04/Prob3_Plot6.png")
+grid.raster(img)
+
+```
+
+### Conclusions
+
+TBD
+
+### Network 3 Details
+
+* Network Parameters
+    * Topology: (1 + 1 bias) - (10 + 1 bias) - 1
+    * Transfer Function: Hyperbolic Tangent (slope = 1)
+* Learning Parameters
+    * Initial Weights: drawn randomly from Uniform[-0.1, 0.1]
+    * Learning Rate: 0.5 and 0.000005
+    * Momentum: 0.04
+    * Epoch Size: 100
+    * Stopping Criterion: 5,000 Learning Steps
+    * Error Measure for Stopping Criterion: N/A
+* Input / Output Data, Representation, Scaling:
+    * Number of Training Samples: 200 (drawn randomly from Uniform[0.1, 1.0])
+    * Number of Testing Samples: 100 (drawn randomly from Uniform[0.1, 1.0])
+    * Scaling on Inputs: None
+    * Scaling of Outputs: Dividing by 10
+* Parameters and Error Measures of Performance Evaluation
+    * Error of Function Fit: Root Mean Square Error
+    * Number of Learning Steps Performed: 5,000 Learning Steps
+    * Learning Rate at End: 0.000005
+    * Monitoring Frequency: Every 100 Learning Steps
+
+```{r, echo = FALSE}
+
+img <- readPNG("~/Documents/Rice_University/Spring_2018/NML502/HW04/Prob3_Plot7.png")
+grid.raster(img)
+
+```
+
+```{r, echo = FALSE}
+
+img <- readPNG("~/Documents/Rice_University/Spring_2018/NML502/HW04/Prob3_Plot8.png")
+grid.raster(img)
+
+```
+
+```{r, echo = FALSE}
+
+img <- readPNG("~/Documents/Rice_University/Spring_2018/NML502/HW04/Prob3_Plot9.png")
+grid.raster(img)
+
+```
+
+### Conclusions
+
+TBD
+
+## Overall Conclusions
+
+# Problem 4
+
+### Network Details
+
+* Network Parameters
+    * Topology: (4 + 1 bias) - (3 + 1 bias) - 3
+    * Transfer Function: Hyperbolic Tangent (slope = 1)
+* Learning Parameters
+    * Initial Weights: drawn randomly from Uniform[-0.1, 0.1]
+    * Learning Rate: 0.05
+    * Momentum: 0.4
+    * Epoch Size: 10
+    * Stopping Criterion: 1,000 Learning Steps
+    * Error Measure for Stopping Criterion: N/A
+* Input / Output Data, Representation, Scaling:
+    * Number of Training Samples: 75 from Iris Training Data
+    * Number of Testing Samples: 75 from Iris Testing Data
+    * Scaling on Inputs: None
+    * Scaling of Outputs: Nonw
+* Parameters and Error Measures of Performance Evaluation
+    * Error of Function Fit: Absolute summed difference
+    * Number of Learning Steps Performed: 1,000 Learning Steps
+    * Learning Rate at End: 0.05
+    * Monitoring Frequency: Every 100 Learning Steps
+
+```{r, echo = FALSE}
+
+img <- readPNG("~/Documents/Rice_University/Spring_2018/NML502/HW04/Prob4_Plot1.png")
+grid.raster(img)
+
+```
+
+### Conclusions
+
+TBD
+
+
+
+
+
+
+
+
+
+
+
+

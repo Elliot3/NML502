@@ -16,11 +16,11 @@ bp_recall <- function() {
     
     ## Learning rate for each layer
     
-    ler_rate <- c(0.05, 0.0005)
+    ler_rate <- c(0.5, 0.000005)
     
     ## Batch size
     
-    K <- 20
+    K <- 100
     
     ## Update the learning rate to match the batch size
     
@@ -28,7 +28,7 @@ bp_recall <- function() {
     
     ## Set the forget rate
     
-    alpha <- c(0.4, 0.4)
+    alpha <- c(0.04, 0.04)
     
     ## Define the hyperbolic tangent function
     
