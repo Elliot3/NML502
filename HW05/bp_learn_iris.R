@@ -9,8 +9,7 @@ source("~/Documents/Rice_University/Spring_2018/NML502/HW04_Part1/rms_error.R")
 bp_learn_iris <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, num_outputs, num_layers, x, y, tol, x_test, y_test) {
     
     ## Set the sixe of the inputs
-    if (exists("iter")) {
-    rm(iter)}
+    iter <- 0
     data_size <- dim(x)[2]
     
     ## Container for the errors and iteration number

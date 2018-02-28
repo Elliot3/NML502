@@ -79,13 +79,7 @@ y_all <- cbind(y,y_test)
 
 #get first 3-fold train data
 num_fold <- 3
-train_index <- sample(1:dim(x_all)[2], dim(x_all)[2]*(num_fold-1)/num_fold, replace=F)
-test_index <- setdiff(1:150,train_index)
 
-x_train_fold <- x_all[,train_index]
-y_train_fold <- y_all[,train_index]
-x_test_fold <- x_all[,test_index]
-y_test_fold <- y_all[,test_index]
 
 ## Set up the network architecture
 
@@ -95,15 +89,72 @@ num_layers <- 2
 
 ## Train the network
 
-train_results <- bp_learn_iris(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, num_outputs, num_layers, x_train_fold, y_train_fold, 0.03, x_test_fold, y_test_fold)
+
+#
+
+
+train_index <- sample(1:dim(x_all)[2], dim(x_all)[2]*(num_fold-1)/num_fold, replace=F)
+test_index <- setdiff(1:150,train_index)
+x <- x_all[,train_index]
+y <- y_all[,train_index]
+x_test <- x_all[,test_index]
+y_test <- y_all[,test_index]
+results_a <- bp_learn_iris(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, num_outputs, num_layers, x, y, 0.03, x_test, y_test)
+
+train_index <- sample(1:dim(x_all)[2], dim(x_all)[2]*(num_fold-1)/num_fold, replace=F)
+test_index <- setdiff(1:150,train_index)
+x <- x_all[,train_index]
+y <- y_all[,train_index]
+x_test <- x_all[,test_index]
+y_test <- y_all[,test_index]
+
+results_b <- bp_learn_iris(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, num_outputs, num_layers, x, y, 0.03, x_test, y_test)
+
+train_index <- sample(1:dim(x_all)[2], dim(x_all)[2]*(num_fold-1)/num_fold, replace=F)
+test_index <- setdiff(1:150,train_index)
+x <- x_all[,train_index]
+y <- y_all[,train_index]
+x_test <- x_all[,test_index]
+y_test <- y_all[,test_index]
+
+results_c <- bp_learn_iris(num_iter, ler_rate, K, alpha, trans_func, der_trans_func, num_outputs, num_layers, x, y, 0.03, x_test, y_test)
+
+
+
+length(results_a[[3]])
+length(results_a[[4]])
+
+ggplot() +
+    geom_line(aes(x = results_a[[3]], y = results_a[[4]]), color = "blue") +
+    geom_line(aes(x = results_a[[3]], y = results_a[[5]]), color = "red") +
+    labs(x = "Learning Step", y = "Total Error", title = "Learning History", subtitle = "Blue - Training, Red - Testing")
+
+
+
+
+ggplot() +
+    geom_line(aes(x = results_a[[3]], y = results_a[[4]]), color = "blue") +
+    geom_line(aes(x = results_a[[3]], y = results_a[[5]]), color = "blue",lty=2) +
+    geom_line(aes(x = results_b[[3]], y = results_b[[4]]), color = "red") +
+    geom_line(aes(x = results_b[[3]], y = results_b[[5]]), color = "red",lty=2) +
+    geom_line(aes(x = results_c[[3]], y = results_c[[4]]), color = "green") +
+    geom_line(aes(x = results_c[[3]], y = results_c[[5]]), color = "green",lty=2) +
+    labs(x = "Learning Step", y = "Total Error", title = "Learning History", subtitle = "Solid lines - Training, Dashed lines - Test; red, blue, green - 3 folds")
+
+
+
+
+
 
 # Return the final network components
 
-weights <- train_results[[1]]
-biases <- train_results[[2]]
-ler_step <- train_results[[3]]
-errors_train <- train_results[[4]]
-errors_test <- train_results[[5]]
+#weights <- train_results[[1]]
+#biases <- train_results[[2]]
+#ler_step <- train_results[[3]]
+#errors_train <- train_results[[4]]
+#errors_test <- train_results[[5]]
+#6- y_train_out
+#y_test_out
 
 
 
@@ -113,7 +164,7 @@ errors_test <- train_results[[5]]
 ggplot() +
     geom_line(aes(x = ler_step, y = errors_train), color = "blue") +
     geom_line(aes(x = ler_step, y = errors_test), color = "red") +
-    labs(x = "Learning Step", y = "RMS Error", title = "Learning History", subtitle = "Blue - Training, Red - Testing")
+    labs(x = "Learning Step", y = "Total Error", title = "Learning History", subtitle = "Blue - Training, Red - Testing")
 
 
 
