@@ -1,6 +1,6 @@
 ## Number of iterations
 
-num_iter <- 1000
+num_iter <- 10000
 
 ## Learning rate for each layer
 
@@ -142,9 +142,50 @@ ggplot() +
     labs(x = "Learning Step", y = "Total Error", title = "Learning History", subtitle = "Solid lines - Training, Dashed lines - Test; red, blue, green - 3 folds")
 
 
+print("confusion matrix 1. fold train")
+results_a[[6]]
+print("confusion matrix 1. fold test")
+results_a[[7]]
+print("confusion matrix 2. fold train")
+results_b[[6]]
+print("confusion matrix 2. fold test")
+results_b[[7]]
+print("confusion matrix 3. fold train")
+results_c[[6]]
+print("confusion matrix 3. fold test")
+results_c[[7]]
 
 
+print("classification accuracy 1. fold train")
+results_a[[8]]
+print("classification accuracy 1. fold test")
+results_a[[9]]
+print("classification accuracy 2. fold train")
+results_b[[8]]
+print("classification accuracy 2. fold test")
+results_b[[9]]
+print("classification accuracy 3. fold train")
+results_c[[8]]
+print("classification accuracy 3. fold test")
+results_c[[9]]
 
+print("classification accuracy average and standard deva training")
+a <- c(results_a[[8]],results_b[[8]],results_c[[8]]) 
+mean(a)
+sd(a)
+
+print("classification accuracy average and sd test")
+b <- c(results_a[[9]],results_b[[9]],results_c[[9]]) 
+mean(b)
+sd(b)
+
+
+library(lattice)
+print("desired output (top three rows) vs actual output (bottom three rows)")
+rgb.palette <- colorRampPalette(c("yellow", "blue"), space = "rgb")
+levelplot(t(rbind(results_a[[11]],results_a[[10]])), main="", xlab="data", ylab="output", col.regions=rgb.palette(120), cuts=100, at=seq(0,1,0.01))
+levelplot(t(rbind(results_b[[11]],results_b[[10]])), main="", xlab="data", ylab="output", col.regions=rgb.palette(120), cuts=100, at=seq(0,1,0.01))
+levelplot(t(rbind(results_c[[11]],results_c[[10]])), main="", xlab="data", ylab="output", col.regions=rgb.palette(120), cuts=100, at=seq(0,1,0.01))
 
 # Return the final network components
 

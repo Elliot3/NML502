@@ -16,8 +16,8 @@ bp_learn_iris <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_fu
     
     errors_train <- numeric()
     errors_test <- numeric()
-    confusion_matrix_train <- matrix(nrow=3, ncol=3)
-    confusion_matrix_test <- matrix(nrow=3, ncol=3)
+    confusion_matrix_train <- matrix(0L,nrow=3, ncol=3)
+    confusion_matrix_test <- matrix(0L, nrow=3, ncol=3)
     #y_train_out_arr <- numeric()
     #y_test_out_arr <- numeric()
     ler_step <- numeric()
@@ -139,10 +139,9 @@ bp_learn_iris <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_fu
             #y_test_out_arr[iter] <- y_test_out
             errors_train[iter] <- sum(sum(abs(y - y_train_out)))
             errors_test[iter] <- sum(sum(abs(y_test - y_test_out)))
-            #confusion_matrix_train
-            #confusion_matrix_test
+
             print(iter)
-            print(errors_test)
+            #print(errors_test)
             
             #if (errors_train[iter] < 6) {
                 
@@ -153,11 +152,22 @@ bp_learn_iris <- function(num_iter, ler_rate, K, alpha, trans_func, der_trans_fu
             #}
             
         }
+
+
+
         
     }
+    for (j in 1:dim(y)[2]) {
+    confusion_matrix_train[which.max(y[,j]), which.max(y_train_out[,j])] <- confusion_matrix_train[which.max(y[,j]), which.max(y_train_out[,j])]  +1
+    }
+    for (j in 1:dim(y_test)[2]) {
+    confusion_matrix_test[which.max(y_test[,j]), which.max(y_test_out[,j])] <- confusion_matrix_train[which.max(y_test[,j]), which.max(y_test_out[,j])]  +1
+    }
+    class_accuracy_train <- (sum(diag(confusion_matrix_train)))/sum(confusion_matrix_train)
+    class_accuracy_test <- (sum(diag(confusion_matrix_test)))/sum(confusion_matrix_test)
     
     ## Return the necesssary network information
     
-    return(list(weights, biases, ler_step, errors_train, errors_test, confusion_matrix_train, confusion_matrix_test))
+    return(list(weights, biases, ler_step, errors_train, errors_test, confusion_matrix_train, confusion_matrix_test, class_accuracy_train, class_accuracy_test, y_test, y_test_out))
     
 }
