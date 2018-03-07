@@ -18,12 +18,12 @@ scaled_data <- apply(data[, 1:4], 2, function(x) {(x - mean(x)) / sd(x)})
 
 iris_pca <- prcomp(scaled_data)
 
-eigen_vec <- iris_pca$sdev
-eigen_vals <- iris_pca$rotation
+eigen_vals <- iris_pca$sdev
+eigen_vecs <- iris_pca$rotation
 
 ## Confirm we get the identity matrix
 
-round(iris_pca$rotation %*% t(iris_pca$rotation))
+iris_pca$rotation %*% t(iris_pca$rotation)
 
 ##### Problem 2.2
 
