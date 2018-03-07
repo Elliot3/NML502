@@ -27,3 +27,33 @@ iris_pca$rotation %*% t(iris_pca$rotation)
 
 ##### Problem 2.2
 
+n <- 500
+num_outputs <- c(4, 4)
+num_layers <- 1
+ler_rate <- 0.0001
+
+weights <- list()
+
+weights <- matrix(runif(num_outputs[num_layers] * num_outputs[num_layers + 1]),
+                  nrow = num_outputs[num_layers + 1],
+                  ncol = num_outputs[num_layers])
+
+y <- scaled_data
+
+temp_cell <- integer()
+
+for (i in 1:n) {
+    
+    rand_ind <- sample(1:75, 1)
+    
+    x_output <- t(weights) %*% y[rand_ind, ]
+    
+    for (j in 1:length(y[rand_ind, ])) {
+            
+            temp_cell[j + 1,] <- temp_cell[j,] + y[rand_ind, ][[j]] * t(weights[j,])
+        
+    }
+    
+    weights <- weights + (ler_rate * y[rand_ind, ] %*% x_output) - (ler_rate * (y[rand_ind, ] %*% temp_cell))
+    
+}
