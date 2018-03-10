@@ -29,63 +29,57 @@ iris_pca$rotation %*% t(iris_pca$rotation)
 
 ##### Problem 2.2
 
-n <- 50000
+n <- 250000
 num_outputs <- c(4, 4)
 num_layers <- 1
-ler_rate <- 0.0001
+ler_rate <- 0.001
 
 weights <- list()
 
-weights <- matrix(runif(num_outputs[num_layers] * num_outputs[num_layers + 1], min = -1, max = 1),
+weights <- matrix(runif(num_outputs[num_layers] * num_outputs[num_layers + 1], min = -0.1, max = 0.1),
                   nrow = num_outputs[num_layers + 1],
                   ncol = num_outputs[num_layers])
 
-y <- scaled_data
+x <- scaled_data
 
 for (i in 1:n) {
     
     rand_ind <- sample(1:75, 1)
     
-    x_output <- weights %*% matrix(y[rand_ind, ], ncol = 1)
+    y <- weights %*% matrix(x[rand_ind, ], ncol = 1)
     
     temp_mat <- matrix(0, nrow = 4, ncol = 4)
     
-    for (j in 1:length(y[rand_ind, ])) {
+    for (j in 1:length(y)) {
         
         if (j == 1) {
             
-            temp_mat[j, ] <- c(y[rand_ind, ][j] * (y[rand_ind, ][j] * weights[[j]]),
-                               0, 0, 0)
+            temp_mat[j, ] <- (y[j] * y[j] * weights[j, ])
             
         } else if (j == 2) {
             
-            temp_mat[j, ] <- c(y[rand_ind, ][j] * y[rand_ind, ][j - 1] * weights[[j - 1]],
-                               y[rand_ind, ][j] * y[rand_ind, ][j] * weights[[j]],
-                               0, 0)
+            temp_mat[j, ] <- (y[j] * y[j - 1] * weights[j - 1, ]) + (y[j] * y[j] * weights[j, ])
             
         } else if (j == 3) {
             
-            temp_mat[j, ] <- c(y[rand_ind, ][j] * y[rand_ind, ][j - 2] * weights[[j - 2]],
-                               y[rand_ind, ][j] * y[rand_ind, ][j - 1] * weights[[j - 1]],
-                               y[rand_ind, ][j] * y[rand_ind, ][j] * weights[[j]],
-                               0)
+            temp_mat[j, ] <- (y[j] * y[j - 2] * weights[j - 2, ]) + (y[j] * y[j - 1] * weights[j - 1, ]) + (y[j] * y[j] * weights[j, ])
             
         } else if (j == 4) {
             
-            temp_mat[j, ] <- c(y[rand_ind, ][j] * y[rand_ind, ][j - 3] * weights[[j - 3]],
-                               y[rand_ind, ][j] * y[rand_ind, ][j - 2] * weights[[j - 2]],
-                               y[rand_ind, ][j] * y[rand_ind, ][j - 1] * weights[[j - 1]],
-                               y[rand_ind, ][j] * y[rand_ind, ][j] * weights[[j]])
+            temp_mat[j, ] <- (y[j] * y[j - 3] * weights[j - 3, ]) + (y[j] * y[j - 2] * weights[j - 2, ]) + (y[j] * y[j - 1] * weights[j - 1, ]) + (y[j] * y[j] * weights[j, ])
             
         }
         
     }
     
     weights <- weights +
-        ler_rate * (matrix(y[rand_ind, ], ncol = 1) %*% matrix(x_output, nrow = 1)) -
+        ler_rate * (matrix(y, ncol = 1) %*% matrix(x[rand_ind, ], nrow = 1)) -
         ler_rate * temp_mat
-
+    
 }
+
+weights
+weights %*% t(weights)
 
 
 
