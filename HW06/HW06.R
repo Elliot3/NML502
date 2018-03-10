@@ -1,3 +1,15 @@
+##### Workspace Preparation
+
+## Load in packages
+
+library(ggplot2)
+
+## Load in euclidean distance function
+
+euclidean_distance <- function(p, q){
+    sqrt(sum((p - q)^2))
+}
+
 ##### Problem 2.1
 
 ## Load in the iris training data
@@ -29,10 +41,74 @@ iris_pca$rotation %*% t(iris_pca$rotation)
 
 ##### Problem 2.2
 
+## Construct the learning function
+
+learn_gha <- function(x, n, num_outputs, num_layers, ler_rate, weights) {
+    
+    learn_matrices <- list()
+    learn_step <- numeric()
+    euc_dist <- numeric()
+    
+    for (i in 1:n) {
+        
+        rand_ind <- sample(1:75, 1)
+        
+        y <- weights %*% matrix(x[rand_ind, ], ncol = 1)
+        
+        temp_mat <- matrix(0, nrow = 4, ncol = 4)
+        
+        for (j in 1:length(y)) {
+            
+            if (j == 1) {
+                
+                temp_mat[j, ] <- (y[j] * y[j] * weights[j, ])
+                
+            } else if (j == 2) {
+                
+                temp_mat[j, ] <- (y[j] * y[j - 1] * weights[j - 1, ]) + (y[j] * y[j] * weights[j, ])
+                
+            } else if (j == 3) {
+                
+                temp_mat[j, ] <- (y[j] * y[j - 2] * weights[j - 2, ]) + (y[j] * y[j - 1] * weights[j - 1, ]) + (y[j] * y[j] * weights[j, ])
+                
+            } else if (j == 4) {
+                
+                temp_mat[j, ] <- (y[j] * y[j - 3] * weights[j - 3, ]) + (y[j] * y[j - 2] * weights[j - 2, ]) + (y[j] * y[j - 1] * weights[j - 1, ]) + (y[j] * y[j] * weights[j, ])
+                
+            }
+            
+        }
+        
+        weights <- weights +
+            ler_rate * (matrix(y, ncol = 1) %*% matrix(x[rand_ind, ], nrow = 1)) -
+            ler_rate * temp_mat
+        
+        if (i %% 100 == 0) {
+            
+            learn_step[length(learn_step) + 1] <- i
+            learn_matrices[[length(learn_matrices) + 1]] <- weights %*% t(weights)
+            euc_dist[length(euc_dist) + 1] <- euclidean_distance(id_matrix, weights %*% t(weights))
+            
+        }
+        
+    }
+    
+    ggplot() +
+        geom_line(aes(x = learn_step, y = euc_dist)) +
+        labs(x = "Learning Step", y = "Euclidean Distance", title = "Matrix Distance",
+             subtitle = "Distance between Weight Matrix times its Transpose and the Identity Matrix")
+    
+}
+
+## Set the network parameters
+
+x <- scaled_data
 n <- 1000000
 num_outputs <- c(4, 4)
 num_layers <- 1
-ler_rate <- 0.001
+ler_rate <- 0.0005
+
+## Build the weight matrix
 
 weights <- list()
 
@@ -40,51 +116,13 @@ weights <- matrix(runif(num_outputs[num_layers] * num_outputs[num_layers + 1], m
                   nrow = num_outputs[num_layers + 1],
                   ncol = num_outputs[num_layers])
 
-x <- scaled_data
+## Set the identity matrix
 
-for (i in 1:n) {
-    
-    rand_ind <- sample(1:75, 1)
-    
-    y <- weights %*% matrix(x[rand_ind, ], ncol = 1)
-    
-    temp_mat <- matrix(0, nrow = 4, ncol = 4)
-    
-    for (j in 1:length(y)) {
-        
-        if (j == 1) {
-            
-            temp_mat[j, ] <- (y[j] * y[j] * weights[j, ])
-            
-        } else if (j == 2) {
-            
-            temp_mat[j, ] <- (y[j] * y[j - 1] * weights[j - 1, ]) + (y[j] * y[j] * weights[j, ])
-            
-        } else if (j == 3) {
-            
-            temp_mat[j, ] <- (y[j] * y[j - 2] * weights[j - 2, ]) + (y[j] * y[j - 1] * weights[j - 1, ]) + (y[j] * y[j] * weights[j, ])
-            
-        } else if (j == 4) {
-            
-            temp_mat[j, ] <- (y[j] * y[j - 3] * weights[j - 3, ]) + (y[j] * y[j - 2] * weights[j - 2, ]) + (y[j] * y[j - 1] * weights[j - 1, ]) + (y[j] * y[j] * weights[j, ])
-            
-        }
-        
-    }
-    
-    weights <- weights +
-        ler_rate * (matrix(y, ncol = 1) %*% matrix(x[rand_ind, ], nrow = 1)) -
-        ler_rate * temp_mat
-    
-}
+id_matrix <- diag(x = 4)
 
-t(weights)
-weights %*% t(weights)
+## Learn the network
 
-
-
-
-
+learn_gha(x, n, num_outputs, num_layers, ler_rate, weights)
 
 
 
