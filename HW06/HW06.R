@@ -103,7 +103,7 @@ learn_gha <- function(x, n, num_outputs, num_layers, ler_rate, weights) {
 ## Set the network parameters
 
 x <- scaled_data
-n <- 1000000
+n <- 1500000
 num_outputs <- c(4, 4)
 num_layers <- 1
 ler_rate <- 0.0005
