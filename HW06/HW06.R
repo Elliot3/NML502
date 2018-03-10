@@ -29,7 +29,7 @@ iris_pca$rotation %*% t(iris_pca$rotation)
 
 ##### Problem 2.2
 
-n <- 250000
+n <- 1000000
 num_outputs <- c(4, 4)
 num_layers <- 1
 ler_rate <- 0.001
@@ -78,7 +78,7 @@ for (i in 1:n) {
     
 }
 
-weights
+t(weights)
 weights %*% t(weights)
 
 
