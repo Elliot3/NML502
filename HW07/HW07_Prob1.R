@@ -30,8 +30,8 @@ for (i in 1:100) {
 
 ## Initialize the radius size and decay
 
-radius_init <- sqrt(length(lattice_matrix))
-radius_decay <- num_iter / log(radius_init)
+radius <- sqrt(length(lattice_matrix)) / 2
+radius_decay <- num_iter / log(radius)
 
 ## Learn the SOM
 
@@ -42,7 +42,7 @@ for (i in 1:num_iter) {
     rand_ind <- sample(x = 1:dim(X)[2], size = 1)
     x_vec <- as.matrix(X[, rand_ind], ncol = 1)
     
-    ## Find the Euclidean distance between x and all weights
+    ## Find the Euclidean distance between x and all weights and locate winning neuron
     
     diff_matrix <- list()
     
@@ -52,5 +52,63 @@ for (i in 1:num_iter) {
         
     }
     
+    dist_matrix <- list()
+    
+    for (j in 1:length(diff_matrix)) {
+        
+        dist_matrix[[j]] <- sqrt(sum(diff_matrix[[j]])^2)
+        
+        if (j == 1) {
+            
+            min_dist <- dist_matrix[[j]]
+            min_ind <- j
+            
+        } else {
+            
+            if (dist_matrix[[j]] < min_dist) {
+                
+                min_ind <- j
+                
+            }
+            
+            min_dist <- min(min_dist, dist_matrix[[j]])
+            
+        }
+        
+    }
+    
+    ## Decay the SOM parameteres
+    
+    radius <- radius * exp(-i / radius_decay)
+    ler_rate <- ler_rate * exp(-i / num_iter)
+    
+    ## Perform the updates to the SOM
+    
+    
+    
+    
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
