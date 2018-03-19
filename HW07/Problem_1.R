@@ -13,7 +13,7 @@ radius <- matrix_dim / 2
 
 ## Set the number of iterations
 
-num_iter <- 50000
+num_iter <- 20000
 
 ## Set the initial learning rate
 
@@ -21,8 +21,8 @@ ler_rate <- 0.01
 
 ## Load in the input data
 
-x_1 <- runif(n = 2400)
-x_2 <- runif(n = 2400)
+x_1 <- runif(n = 4000)
+x_2 <- runif(n = 4000)
 
 X <- rbind(x_1, x_2)
 rownames(X) <- NULL
@@ -52,5 +52,7 @@ test_2 <- as.vector(learn_results[[2]])
 
 test_3 <- cbind(test_1, test_2)
 rownames(test_3) <- NULL
+
+plot(test_3)
 
 
