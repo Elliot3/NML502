@@ -13,7 +13,7 @@ radius <- matrix_dim / 2
 
 ## Set the number of iterations
 
-num_iter <- 1000
+num_iter <- 50000
 
 ## Set the initial learning rate
 
@@ -36,6 +36,8 @@ input_size <- length(X[, 1])
 SOM_lattice <- build_SOM(input_size, matrix_dim)
 
 ## Perform the learning process
+
+learn_results <- learn_map(SOM_lattice, X, num_iter, radius, ler_rate)
 
 
 
