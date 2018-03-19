@@ -41,6 +41,16 @@ learn_results <- learn_map(SOM_lattice, X, num_iter, radius, ler_rate)
 
 
 
+##### TESTING
 
+
+
+## Plot the results
+
+test_1 <- as.vector(learn_results[[1]])
+test_2 <- as.vector(learn_results[[2]])
+
+test_3 <- cbind(test_1, test_2)
+rownames(test_3) <- NULL
 
 
