@@ -9,7 +9,7 @@ matrix_dim <- 10
 
 ## Set the initial radius of influence on neighbors
 
-radius <- matrix_dim / 2
+radius <- matrix_dim
 
 ## Set the number of iterations
 
