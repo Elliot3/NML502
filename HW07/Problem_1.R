@@ -2,6 +2,7 @@
 
 source("~/Documents/Rice_University/Spring_2018/NML502/HW07/build_SOM.R")
 source("~/Documents/Rice_University/Spring_2018/NML502/HW07/learn_map.R")
+source("~/Documents/Rice_University/Spring_2018/NML502/HW07/plot_SOM.R")
 
 ## Set the SOM lattice dimensions
 
@@ -39,20 +40,16 @@ SOM_lattice <- build_SOM(input_size, matrix_dim)
 
 learn_results <- learn_map(SOM_lattice, X, num_iter, radius, ler_rate)
 
-
-
-##### TESTING
-
-
-
 ## Plot the results
 
-test_1 <- as.vector(learn_results[[1]])
-test_2 <- as.vector(learn_results[[2]])
+plot_SOM(learn_results)
 
-test_3 <- cbind(test_1, test_2)
-rownames(test_3) <- NULL
 
-plot(test_3)
+
+
+
+
+
+
 
 
