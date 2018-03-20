@@ -52,8 +52,8 @@ learn_map <- function(SOM_lattice, X, num_iter, radius, ler_rate) {
         
         ## Update the weights
         
-        SOM_lattice[[2]][[1]] <- SOM_lattice[[2]][[1]] + ler_rate * (neighbor_func %*% matrix_diffs[[1]])
-        SOM_lattice[[2]][[2]] <- SOM_lattice[[2]][[2]] + ler_rate * (neighbor_func %*% matrix_diffs[[2]])
+        SOM_lattice[[2]][[1]] <- SOM_lattice[[2]][[1]] + ler_rate * (neighbor_func * matrix_diffs[[1]])
+        SOM_lattice[[2]][[2]] <- SOM_lattice[[2]][[2]] + ler_rate * (neighbor_func * matrix_diffs[[2]])
         
     }
     

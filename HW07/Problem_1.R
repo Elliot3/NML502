@@ -9,11 +9,11 @@ matrix_dim <- 10
 
 ## Set the initial radius of influence on neighbors
 
-radius <- matrix_dim
+radius <- matrix_dim / 2
 
 ## Set the number of iterations
 
-num_iter <- 20000
+num_iter <- 50000
 
 ## Set the initial learning rate
 
