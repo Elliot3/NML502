@@ -2,6 +2,8 @@
 
 source("~/Documents/Rice_University/Spring_2018/NML502/HW07/build_SOM.R")
 source("~/Documents/Rice_University/Spring_2018/NML502/HW07/learn_map.R")
+source("~/Documents/Rice_University/Spring_2018/NML502/HW07/plot_SOM.R")
+source("~/Documents/Rice_University/Spring_2018/NML502/HW07/recall_PE.R")
 
 ## Set the SOM lattice dimensions
 
@@ -57,3 +59,14 @@ learn_results <- learn_map(SOM_lattice, X, num_iter, radius, ler_rate)
 ## Plot the results
 
 plot_SOM(learn_results)
+
+## Perform the recall
+
+recall_result <- recall_PE(learn_results, X)
+
+
+
+
+
+
+
