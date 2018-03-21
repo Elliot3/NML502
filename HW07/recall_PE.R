@@ -52,6 +52,14 @@ recall_PE <- function(learn_results, X) {
         
     }
     
-    return(neuron_map)
+    s <- as.character(1:matrix_dim)
+    
+    temp_vec <- as.vector(neuron_map)
+    temp_mat <- matrix(temp_vec, nrow = matrix_dim, ncol = matrix_dim)
+    temp_mat <- apply(temp_mat, 2, rev)
+    
+    
+    plot_ly(z = temp_mat, x = ~s, y = ~s, colors = colorRamp(c("white", "black")), type = "heatmap") %>%
+        layout(title = "PE Density Map", xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
     
 }

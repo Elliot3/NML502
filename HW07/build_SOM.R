@@ -22,7 +22,7 @@ build_SOM <- function(input_size, matrix_dim) {
     
     for (i in 1:input_size) {
         
-        SOM_weights[[i]] <- matrix(runif(n = matrix_dim^2, min = -0.5, max = 0.5),
+        SOM_weights[[i]] <- matrix(runif(n = matrix_dim^2, min = 0, max = 1),
                                    ncol = matrix_dim, nrow = matrix_dim)
     
     }

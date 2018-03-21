@@ -1,3 +1,7 @@
+## Load in the necessary libraries
+
+library(plotly)
+
 ## Read in the necessary functions
 
 source("~/Documents/Rice_University/Spring_2018/NML502/HW07/build_SOM.R")
@@ -15,11 +19,11 @@ radius <- matrix_dim / 2
 
 ## Set the number of iterations
 
-num_iter <- 150000
+num_iter <- 500000
 
 ## Set the initial learning rate
 
-ler_rate <- 0.01
+ler_rate <- 0.001
 
 ## Load in the input data
 
@@ -62,10 +66,7 @@ plot_SOM(learn_results)
 
 ## Perform the recall
 
-recall_result <- recall_PE(learn_results, X)
-
-
-
+recall_PE(learn_results, X)
 
 
 
