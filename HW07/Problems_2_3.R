@@ -1,3 +1,7 @@
+## No scientific notation
+
+options(scipen = 999)
+
 ## Load in the necessary libraries
 
 library(plotly)
@@ -68,7 +72,21 @@ learn_results <- learn_map(SOM_lattice, X, num_iter, radius, ler_rate)
 
 ## Plot the results
 
+par(mfrow = c(3, 2))
+par(mar = c(3, 3, 3, 3))
 plot_SOM(learn_results)
+
+## Plot the decay of the radius and learning rate
+
+plot(x = param_container[[1]], y = param_container[[2]], type = "l",
+     xlab = "Learning Step",
+     ylab = "Neighborhood Radius",
+     main = "Neighborhood Radius Decay")
+
+plot(x = param_container[[1]], y = param_container[[3]], type = "l",
+     xlab = "Learning Step",
+     ylab = "Learning Rate",
+     main = "Learning Rate Decay")
 
 ## Perform the recall
 
