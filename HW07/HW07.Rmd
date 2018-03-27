@@ -11,6 +11,7 @@ output: pdf_document
 
 library(png)
 library(grid)
+library(gridExtra)
 
 ```
 
@@ -20,6 +21,7 @@ library(grid)
 
 * Network Parameters
     * Topology: 64 PEs (8x8 2-dimensional square lattice)
+    * Each PE is a 2-dimensional vector (see below for weight draws)
 * Learning Parameters
     * Initial Weights: Drawn from U[0, 1]
     * Initial Learning Rate ($\alpha_{init}$): 0.001
@@ -31,6 +33,7 @@ library(grid)
         * i = current learning step
         * n = total number of learning steps
         * $\mu = \frac{n}{log(\theta_{init})}$
+    * Momentum: None
     * Stopping Criteria: 500,000 learning steps
 * Input Data
     * 1000 Samples drawn from each (4000 total):
@@ -38,6 +41,9 @@ library(grid)
         * Normal[(0,7), 0.1]
         * Normal[(7,0), 0.1]
         * Normal[(0,0), 0.1]
+* Error and Performance Measure
+    * Learning Steps Performed: 500,000
+    * Monitoring Frequency: Every 100,000 Learning Steps
         
 ## Decay Graphs
 
@@ -104,11 +110,91 @@ Our 2-dimension weight vector plots does an excellent job of showing how well ou
 
 # Problem 4
 
-Blah blah.
+See the provided plots below. The first 3 plots display the mU-matrix associated with the network training for identifying the distinct plant species. The last 3 plots show for each plant species, which PEs were activated how often. It is clear that the PEs that activate are distinct and hence the SOM is "classifying well" but it hasn't converged because the regions activated by each species aren't contiguous. Hence, to conclude on why the couple of samples earlier were misinterpreted is difficult. Nevertheless, we can notice that a couple of species 3 samples activate the same PEs as several species 2 (bottom left corner), this shows that these species have data points almost indistinguishable from species 2 which would explain why some classification errors are there.
+
+\newpage
 
 # Problem 5
 
-Blah blah.
+## Parameters
+
+* Network Parameters
+    * Topology: 60 PEs (prototypes)
+    * Each PE is a 2-dimensional vector (see below for weight draws)
+* Learning Parameters
+    * Initial Weights: Drawn from U[0.5, 9]
+    * Initial Learning Rate ($\alpha_{init}$): 0.5
+    * Learning Decay Rate:
+        * Learning Steps 1-15000: 0.5 Learning Rate
+        * Learning Steps 15000-30000: 0.25 Learning Rate
+        * Learning Steps 30000-45000: 0.125 Learning Rate
+        * Learning Steps 45000-100000: 0.05 Learning Rate
+    * Momentum: None
+    * Stopping Criteria #1: 100,000 learning steps
+    * Stopping Criteria #2: 96% or greater training classification accuracy
+* Input Data
+    * 3-class classifaction problem as defined in HW07
+* Error and Performance Measure
+    * Learning Steps Performed: 15,000
+    * Monitoring Frequency: Every 5,000 Learning Steps
+    * Accuracy Measure: Total correct classification / Total points
+    * Accuracy at end of Training: 98.8%
+    
+## Training Results
+    
+```{r, echo = FALSE}
+
+## Read in the plots
+
+img1 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/HW07/Prob5_Plot1.png")), interpolate = FALSE)
+img2 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/HW07/Prob5_Plot2.png")), interpolate = FALSE)
+img3 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/HW07/Prob5_Plot3.png")), interpolate = FALSE)
+img4 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/HW07/Prob5_Plot4.png")), interpolate = FALSE)
+
+grid.arrange(img1, img2, img3, img4, nrow = 2)
+
+```
+
+As we can see by our training results, our network converged quite quickly during this (our best) iteration; of the maximum allowed 100,000 learning steps, training was stopped at 15,000 with the great result of 98.8% classification accuracy. The training at the 15,000th step looks great except for the collection of Class 3 points that have congregated in the central Class 2 region.
+
+```{r, echo = FALSE, fig.height = 6, fig.width = 6}
+
+## Read in the plot
+
+img <- readPNG("~/Documents/Rice_University/Spring_2018/NML502/HW07/Prob5_Plot5.png")
+grid.raster(img)
+
+```
+
+Our learning history plot shows how successful this run was for us. Our initial accuracy was 30% at Step 1, followed by 90% at Step 5,000, then 94% at Step 10,000 and finally almost 99% at Step 15,000. We were able to reach our pre-determined tolerance level of 96% very quickly on this run.
+
+## Test Recall Results
+
+```{r, echo = FALSE, fig.height = 6, fig.width = 6}
+
+## Read in the plot
+
+img <- readPNG("~/Documents/Rice_University/Spring_2018/NML502/HW07/Prob5_Plot6.png")
+grid.raster(img)
+
+```
+
+On the fine grid using the network we had already trained, we again achieved fairly strong results with a classification accuracy of 83%; this was the best result we had obtained and we felt very strongly about this classification measure. There is very good representation for all of the original classification regions following this test recall.
+
+## Training and Test Comparison
+
+```{r, echo = FALSE}
+
+## Read in the plots
+
+img1 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/HW07/Prob5_Plot7.png")), interpolate = FALSE)
+img2 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/HW07/Prob5_Plot8.png")), interpolate = FALSE)
+
+grid.arrange(img1, img2, nrow = 1)
+
+```
+
+Looking at a side-by-side view of our test data and our training data, I think our results are very encouraging. Aside from our 83% accuracy measure (which we feel is very strong) a cursory look at the training and test data plot will show that there is very good representation for the original classification regions. An interesting anomaly (again) is the blue region that has manifested in the certain of our plot; but aside from that, we are extremely happy with these results!
 
 # Code Appendix
 
@@ -498,4 +584,279 @@ plot_SOM <- function(learn_results) {
     
 }
 
+
+
+
+
+########## Problem 5 ##########
+
+
+
+
+
+## Load in the necessary packages
+
+library(ggplot2)
+
+## Build the recall function
+
+recall_func <- function(X, Cx, W, Cw) {
+    
+    Cy <- apply(X, 2, function(x) {
+        
+        d <- apply(x - W, 2, norm, type = "2")
+        min_d <- min(d)
+        min_ind <- which(d == min_d)
+        
+        if (length(min_ind) != 1) {
+            
+            min_ind <- min_ind[1]
+            
+        }
+        
+        Cw[min_ind]
+        
+    })
+    
+    accuracy <- sum((Cy - Cx) == 0) / length(Cx)
+    
+    return(list(accuracy, Cy))
+    
+}
+
+## Build the function for testing recall
+
+recall_test_func <- function(X, W, Cw) {
+    
+    Cy <- apply(X, 2, function(x) {
+        
+        d <- apply(x - W, 2, norm, type = "2")
+        min_d <- min(d)
+        min_ind <- which(d == min_d)
+        
+        if (length(min_ind) != 1) {
+            
+            min_ind <- min_ind[1]
+            
+        }
+        
+        Cw[min_ind]
+        
+    })
+    
+    accuracy <- NA
+    
+    return(list(accuracy, Cy))
+    
+    
+}
+
+## Build the plotting function
+
+plot_func <- function(A, nrows, ncols, W, Cw) {
+    
+    data <- data.frame(
+        
+        factor = factor(A),
+        row = rep(1:nrows, each = ncols),
+        col = rep(1:ncols, times = nrows)
+        
+    )
+    
+    plot <- ggplot() +
+        geom_rect(aes(xmin = col - 0.5, xmax = col + 0.5, ymin = -row - 0.5, ymax = 0.5 - row,
+                      fill = factor), 
+                  data = data, alpha = 0.5) +
+        xlim(0.5, ncols + 0.5) +
+        ylim(-0.5 - nrows, -0.5) + 
+        theme(axis.text = element_blank(), axis.ticks = element_blank()) +
+        labs(fill = "Class Labels") +
+        xlab("") +
+        ylab("")
+    
+    proto_data <- data.frame(
+        
+        factor = Cw,
+        row = t(W)[, 1],
+        col = t(W)[, 2]
+        
+    )
+    
+    proto_data$factor <- as.factor(proto_data$factor)
+    
+    plot = plot + geom_point(aes(x = col, y = -row, color = factor), data = proto_data) +
+        guides(color = FALSE)
+    
+    return(plot)
+    
+}
+
+
+
+##### Part a #####
+
+
+
+A = c(3, 1, 1, 1, 1, 2, 3, 3, 3,
+      3, 3, 3, 3, 3, 2, 3, 3, 3,
+      3, 3, 3, 3, 3, 1, 2, 2, 2,
+      3, 1, 1, 1, 1, 1, 1, 1, 1,
+      3, 1, 1, 1, 2, 1, 1, 1, 1,
+      3, 1, 1, 2, 2, 2, 1, 1, 1,
+      3, 1, 2, 2, 1, 3, 2, 2, 2,
+      3, 3, 3, 3, 3, 3, 2, 2, 2,
+      3, 3, 3, 3, 3, 3, 3, 3, 2)
+
+nrows <- 9
+ncols <- 9
+ndim <- 2
+
+# A <- matrix(A, nrow = nrows, ncol = ncols, byrow = FALSE)
+
+N <- nrows * ncols
+nP <- 60
+nC <- 3
+maxsteps <- 100000
+tol <- 0.96
+mu <- 0.5
+LRsched <- matrix(
+    c(0, 0.5, 15000, 0.25, 30000, 0.125, 45000, 0.05),
+    ncol = 2, byrow = TRUE
+)
+Mfrsched <- c(1, seq(from = 5000, to = maxsteps, by = 5000))
+prots_per_class <- round(nP / nC)
+Cw <- rep(1:nC, each = prots_per_class)
+
+X <- rbind(rep(1:nrows, each = ncols), rep(1:ncols, nrows))
+Cx <- A
+
+W <- matrix(runif(ndim * nP, min(X), max(X)), nrow = ndim, ncol = nP)
+
+ler_step <- numeric()
+step_acc <- numeric()
+plot_container <- list()
+
+for (i in 1:maxsteps) {
+    
+    mu <- tail(LRsched[i > LRsched[, 1], 2], 1)
+    
+    rand_ind <- sample(1:N, 1)
+    
+    d <- apply(W - X[, rand_ind], 2, norm, type = "2")
+    min_d <- min(d)
+    min_ind <- which(d == min_d)
+    
+    if (Cw[min_ind] == Cx[rand_ind]) {
+        
+        W[, min_ind] <- W[, min_ind] + mu * (X[, rand_ind] - W[, min_ind])
+        
+    } else {
+        
+        W[, min_ind] <- W[, min_ind] - mu * (X[, rand_ind] - W[, min_ind])
+        
+    }
+    
+    if (i %in% Mfrsched) {
+        
+        ler_step[length(ler_step) + 1] <- i
+        
+        recall <- recall_func(X, Cx, W, Cw)
+        accuracy <- recall[[1]]
+        step_acc[length(step_acc) + 1] <- accuracy
+        plot <- plot_func(A = A, nrows = nrows, ncols = ncols, W = W, Cw = Cw)
+        plot <- plot + labs(title = paste("Learning Step: ", i))
+        
+        plot_container[[length(plot_container) + 1]] <- plot
+        
+        if (accuracy > tol) {
+            
+            break
+            
+        }
+        
+    }
+    
+}
+
+len <- length(plot_container)
+
+plot_container[[len]]
+
+ggplot() +
+    geom_line(aes(x = ler_step, y = step_acc)) +
+    geom_hline(aes(yintercept = tol), color = "red", linetype = "dashed") +
+    labs(x = "Learning Step", y = "Classification Accuracy") +
+    ggtitle("Learning History")
+
+
+
+##### Part b #####
+
+
+
+nrows <- 18
+ncols <- 18
+ndim <- 2
+
+N <- nrows * ncols
+
+X <- rbind(rep(1:nrows, each = ncols), rep(1:ncols, times = nrows)) / 2
+
+recall <- recall_test_func(X, W, Cw)
+Cy <- recall[[2]]
+
+plot <- plot_func(Cy, nrows, ncols, W = W * 2, Cw = Cw)
+
+plot + ggtitle("Test Recall")
+
+data_1 <- data.frame(
+    
+    factor = factor(rep(factor(A), times = 4)),
+    row = rep(c(1,3,5,7,9,11,13,15,17,2,4,6,8,10,12,14,16,18), times = 2, each = (nrows / 2)),
+    col = c(rep(c(1,3,5,7,9,11,13,15,17), times = 18), rep(c(2,4,6,8,10,12,14,16,18), times = 18))
+    
+)
+
+data_2 <- data.frame(
+    
+    factor = factor(Cy),
+    row = rep(1:nrows, each = ncols),
+    col = rep(1:ncols, times = nrows)
+    
+)
+
+join_data <- inner_join(data_1, data_2, by = c('row', 'col'))
+join_data$diff <- as.numeric(join_data$factor.x) - as.numeric(join_data$factor.y)
+
+count_correct <- sum(join_data$diff == 0)
+count_total <- dim(join_data)[1]
+count_correct / count_total
+
+
+
+ggplot() +
+    geom_rect(aes(xmin = col - 0.5, xmax = col + 0.5, ymin = -row - 0.5, ymax = 0.5 - row,
+                  fill = factor.x),
+              data = join_data, alpha = 0.5) +
+    theme(axis.text = element_blank(), axis.ticks = element_blank()) +
+    xlab("") +
+    ylab("") +
+    labs(fill = "Class Labels") +
+    ggtitle("Final Training Results")
+
+ggplot() +
+    geom_rect(aes(xmin = col - 0.5, xmax = col + 0.5, ymin = -row - 0.5, ymax = 0.5 - row,
+                  fill = factor.y),
+              data = join_data, alpha = 0.5) +
+    theme(axis.text = element_blank(), axis.ticks = element_blank()) +
+    xlab("") +
+    ylab("") +
+    labs(fill = "Class Labels") +
+    ggtitle("Final Test Results")
+
+
+
+
 ```
+
+## Problem 4 Code (MATLAB Code)
