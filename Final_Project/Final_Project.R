@@ -141,6 +141,110 @@ learn_SOM <- function(input_data, SOM_lattice, num_iter, ler_rate, radius, matri
     
 }
 
+## Function to build the squares of the mU-matrix
+
+plot_square <- function(start, width, height, col) {
+    
+    p <- start
+    
+    polygon(
+        
+        x = c(p[1], p[1] + width, p[1] + width, p[1]), 
+        y = c(p[2], p[2], p[2] + height, p[2] + height), col = col, border = NA
+        
+    )
+    
+}
+
+## Function to plot the prototypes for the SOM lattice
+
+SOM_prototype <- function(p, border, cols) {
+    
+    cols <- c(cols[2:5], cols[1], cols[6:9])
+    
+    plot_square(p, border, border, col = cols[1])
+    plot_square(c(p[1] + border, p[2]), 1 - 2 * border, border, col = cols[2])
+    plot_square(c(p[1] + 1 - border, p[2]), border, border, col = cols[3])
+    
+    plot_square(c(p[1], p[2] + border), border, 1 - 2 * border, col = cols[4])
+    plot_square(c(p[1] + border, p[2] + border), 1 - 2 * border, 1 - 2 * border, col = cols[5])
+    plot_square(c(p[1] + 1 - border, p[2] + border), border, 1 - 2 * border, col = cols[6])
+    
+    plot_square(c(p[1], p[2] + 1 - border), border, border, col = cols[7])
+    plot_square(c(p[1] + border, p[2] + 1 - border), 1 - 2 * border, border, col = cols[8])
+    plot_square(c(p[1] + 1 - border, p[2] + 1 - border), border, border, col = cols[9])
+    
+}
+
+## Function to plot the whole mU-matrix
+
+plot_mU_matrix <- function(W, width, height, classes, density,
+                           colornames = c('red', 'yellow', 'blue', 'green', 'orange', 'purple', 'salmon', 'turquoise', 'steelblue', 'lightyellow'),
+                           border = 0.05, border_max_scale = 3, xlab = '', ylab = '', ...) {
+    
+    index <- seq_len(ncol(W))
+    dim(index) <- c(width, height)
+    
+    palette <- colorRampPalette(c('black', 'white'))
+    cols <- palette(1000)
+    ncols <- length(cols)
+    
+    classes = as.numeric(factor(classes))
+    classes[is.na(classes)] <- 1
+    clscolors <- lapply(sort(unique(classes)), function(i) {
+        
+        palette = colorRampPalette(c('black', colornames[i]))(100)
+        
+    })
+    
+    density <- ceiling(density / max(density) * 99)
+    
+    plot(0:height, c(rep(0, height), width), type='n', asp = 1, axes = F, xlab = xlab, ylab = ylab, ...)
+    
+    index <- t(index)
+    
+    junk <- rbind(
+        c(-1, -1),
+        c(0, -1),
+        c(1, -1),
+        c(-1, 0),
+        c(1, 0),
+        c(-1, 1),
+        c(0, 1),
+        c(1, 1)
+    )
+    
+    for(i in 1:width) {
+        
+        for(j in 1:height) {
+            
+            ind = index[i, j]
+            apply(junk, 1, function(shift) {
+                
+                tryCatch({
+                    
+                    ind2 = index[i + shift[2], j + shift[1]]
+                    d = norm(W[ind] - W[ind2], type = '2')
+                    return(d)
+                    
+                }, error = function(e){
+                    
+                    print(c(i, j))
+                    return(0)
+                    
+                })
+                
+            }) -> dist
+            dist <- floor(dist / border_max_scale * ncols) + 1
+            dist[dist > ncols] <- ncols
+            col <- clscolors[[classes[ind]]][density[ind]]
+            SOM_prototype(c(j - 1, i - 1), border, c(col, cols[dist]))
+        }
+        
+    }
+    
+}
+
 
 
 ##### Load the Data #####
@@ -205,6 +309,12 @@ SOM_lattice <- build_SOM(input_size, matrix_dim)
 
 
 learn_results <- learn_SOM(input_data = input_space, SOM_lattice, num_iter, ler_rate, radius, matrix_dim)
+
+
+
+
+
+# plot_mU_matrix(learn_results[[6]][[2]], width = 15, height = 15, classes = c(rep(1, 100), rep(2, 125)), density = c(round(runif(225) * 10)))
 
 
 
