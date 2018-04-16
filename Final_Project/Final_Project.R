@@ -1,15 +1,3 @@
-########## Testing Space ##########
-
-
-# density <- c(round(runif(225) * 10))
-
-
-# final_lattice <- learn_results[[6]][[2]]
-# plot_mU_matrix(learn_results[[6]][[2]], width = 15, height = 15, classes = c(rep(1, 100), rep(2, 125)), density = temp)
-# recall_SOM(final_lattice, input_space)
-# input_space <- input_space[seq(1, dim(input_space)[1], 100), ]
-
-
 
 
 
@@ -30,17 +18,6 @@ library(dplyr)
 ##### Construct the Functions #####
 
 
-
-## Function to calculate the Manhattan distance
-
-manhattan_dist <- function(rating1, rating2) {
-    
-    distance <- abs(rating1 - rating2)
-    distance <- sum(distance)
-    
-    return(distance)
-    
-}
 
 ## Function to build the SOM lattice matrix
 
@@ -132,7 +109,7 @@ learn_SOM <- function(input_data, SOM_lattice, num_iter, ler_rate, radius, matri
         mat_diffs_y <- abs(SOM_indices[[1]] - min_loc[1])
         mat_diffs_x <- abs(SOM_indices[[2]] - min_loc[2])
         man_dist <- mat_diffs_x + mat_diffs_y
-        neighbor_func <- as.vector(exp(-((man_dist)/(radius))^2))
+        neighbor_func <- as.vector(t(exp(-((man_dist)/(radius))^2)))
         
         ## Update the weights
         
@@ -334,8 +311,12 @@ data <- read.csv("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/r
 
 selected_styles <- c(7, 10, 134, 9, 4, 30, 86, 12, 92, 6)
 
+# data_final <- data %>%
+#     select(StyleID, Size.L., OG, FG, ABV, IBU, Color, BoilSize, BoilTime, BoilGravity, Efficiency) %>%
+#     filter(StyleID %in% selected_styles)
+
 data_final <- data %>%
-    select(StyleID, Size.L., OG, FG, ABV, IBU, Color, BoilSize, BoilTime, BoilGravity, Efficiency) %>%
+    select(StyleID, Size.L., OG, FG) %>%
     filter(StyleID %in% selected_styles)
 
 ## Remove rows with NAs
@@ -346,7 +327,7 @@ data_final <- data_final[complete.cases(data_final), ]
 ## Separate the input space from the labels
 
 output_space <- matrix(as.numeric(unlist(data_final$StyleID)), nrow = length(data_final$StyleID))
-input_space <- matrix(as.numeric(unlist(data_final[, 2:11])), nrow = nrow(data_final[, 2:11]))
+input_space <- matrix(as.numeric(unlist(data_final[, 2:dim(data_final)[2]])), nrow = nrow(data_final[, 2:dim(data_final)[2]]))
 
 ## Define some data details
 
@@ -361,7 +342,7 @@ matrix_dim <- 15
 
 ## Set some network parameters
 
-ler_rate <- 0.001
+ler_rate <- 0.05
 num_iter <- 50000
 radius <- matrix_dim / 2
 
@@ -376,37 +357,52 @@ SOM_lattice <- build_SOM(input_size, matrix_dim)
 
 
 
-
-
-##### Learn the SOM Network #####
-
-## TESTING
+### TESTING ###
 
 input_space <- input_space[seq(1, dim(input_space)[1], 100), ]
 
+
+
+## Learn the network
+
 learn_results <- learn_SOM(input_data = input_space, SOM_lattice, num_iter, ler_rate, radius, matrix_dim)
 
-test <- recall_SOM(final_lattice, input_space)
+## Extract the final lattice of prototypes
 
-for (i in seq(from = dim(test)[1], to = 1, by = -1)) {
-    
-    if (i == dim(test)[1]) {
-        
-        temp <- as.vector(test[i, ])
-        
-    } else {
-        
-        temp <- c(temp, as.vector(test[i, ]))
-        
-    }
-    
-}
+final_lattice <- learn_results[[length(learn_results)]][[2]]
 
-##### K Means Analysis #####
+
+
+########## Plot Results ##########
 
 
 
 
+
+
+
+
+
+########## TESTING ##########
+
+
+plot_mU_matrix(final_lattice, width = 15, height = 15, classes = c(rep(1, 225)), density = c(round(runif(225) * 10)))
+
+# test <- recall_SOM(final_lattice, input_space)
+# 
+# for (i in seq(from = dim(test)[1], to = 1, by = -1)) {
+#     
+#     if (i == dim(test)[1]) {
+#         
+#         temp <- as.vector(test[i, ])
+#         
+#     } else {
+#         
+#         temp <- c(temp, as.vector(test[i, ]))
+#         
+#     }
+#     
+# }
 
 
 
