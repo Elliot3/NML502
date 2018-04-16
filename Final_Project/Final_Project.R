@@ -1,3 +1,18 @@
+########## Testing Space ##########
+
+
+# density <- c(round(runif(225) * 10))
+
+
+# final_lattice <- learn_results[[6]][[2]]
+# plot_mU_matrix(learn_results[[6]][[2]], width = 15, height = 15, classes = c(rep(1, 100), rep(2, 125)), density = temp)
+# recall_SOM(final_lattice, input_space)
+# input_space <- input_space[seq(1, dim(input_space)[1], 100), ]
+
+
+
+
+
 ########## Workspace Preparation ##########
 
 
@@ -97,7 +112,7 @@ learn_SOM <- function(input_data, SOM_lattice, num_iter, ler_rate, radius, matri
         
         for (j in 1:dim(SOM_lattice)[2]) {
             
-            list_diffs[[j]] <- input - SOM_lattice[[j]]
+            list_diffs[[j]] <- input - as.matrix(SOM_lattice[, j], 1)
             vec_dists[j] <- norm(list_diffs[[j]], type = "2")
             
         }
@@ -138,6 +153,66 @@ learn_SOM <- function(input_data, SOM_lattice, num_iter, ler_rate, radius, matri
     }
     
     return(SOM_container)
+    
+}
+
+## Function to determine which PE an input maps to 
+
+recall_SOM <- function(final_lattice, input_space) {
+    
+    ## Dimensions of the square lattice
+    
+    dim_lat <- sqrt(dim(final_lattice)[2])
+    
+    ## Container for which PE the input maps to
+    
+    neuron_map <- matrix(0, ncol = dim_lat, nrow = dim_lat)
+    colnames(neuron_map) <- 1:dim_lat
+    rownames(neuron_map) <- 1:dim_lat
+    
+    for (i in 1:dim(input_space)[1]) {
+        
+        ## Extract the input vector 
+        
+        input <- as.matrix(input_space[i, ], ncol = 1)
+        
+        ## Calculate the Euclidean distance
+        
+        list_diffs <- list()
+        vec_dists <- numeric()
+        
+        for (j in 1:dim(final_lattice)[2]) {
+            
+            list_diffs[[j]] <- input - as.matrix(final_lattice[, j], ncol = 1)
+            vec_dists[j] <- norm(list_diffs[[j]], type = "2")
+            
+        }
+        
+        ## Find the winning PE
+        
+        min_neuron <- min(vec_dists)
+        min_list <- as.vector(which(vec_dists == min(vec_dists), arr.ind = TRUE))
+        
+        x_pt <- floor(min_list / matrix_dim) + 1
+        y_pt <- min_list - ((x_pt - 1) * matrix_dim)
+        
+        min_loc <- c(x_pt, y_pt)
+        
+        ## Add the location to the neuron map
+        
+        if (neuron_map[min_loc[1], min_loc[2]] == 0) {
+            
+            neuron_map[min_loc[1], min_loc[2]] <- 1
+            
+        } else {
+            
+            neuron_map[min_loc[1], min_loc[2]] <- neuron_map[min_loc[1], min_loc[2]] + 1
+            
+        }
+        
+    }
+    
+    return(neuron_map)
     
 }
 
@@ -287,13 +362,12 @@ matrix_dim <- 15
 ## Set some network parameters
 
 ler_rate <- 0.001
-num_iter <- 5000
+num_iter <- 50000
 radius <- matrix_dim / 2
 
 ## Build the weight matrix
 
 SOM_lattice <- build_SOM(input_size, matrix_dim)
-
 
 
 
@@ -304,17 +378,33 @@ SOM_lattice <- build_SOM(input_size, matrix_dim)
 
 
 
-##### Learn the Network #####
+##### Learn the SOM Network #####
 
+## TESTING
 
+input_space <- input_space[seq(1, dim(input_space)[1], 100), ]
 
 learn_results <- learn_SOM(input_data = input_space, SOM_lattice, num_iter, ler_rate, radius, matrix_dim)
 
+test <- recall_SOM(final_lattice, input_space)
+
+for (i in seq(from = dim(test)[1], to = 1, by = -1)) {
+    
+    if (i == dim(test)[1]) {
+        
+        temp <- as.vector(test[i, ])
+        
+    } else {
+        
+        temp <- c(temp, as.vector(test[i, ]))
+        
+    }
+    
+}
+
+##### K Means Analysis #####
 
 
-
-
-# plot_mU_matrix(learn_results[[6]][[2]], width = 15, height = 15, classes = c(rep(1, 100), rep(2, 125)), density = c(round(runif(225) * 10)))
 
 
 
