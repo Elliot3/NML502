@@ -143,11 +143,15 @@ learn_SOM <- function(input_data, SOM_lattice, num_iter, ler_rate, radius, matri
 
 ## Function to determine which PE an input maps to 
 
-recall_SOM <- function(final_lattice, input_space) {
+recall_SOM <- function(final_lattice, input_space, output_space) {
     
     ## Dimensions of the square lattice
     
     dim_lat <- sqrt(dim(final_lattice)[2])
+    
+    ## Container for the classes of each input
+    
+    class_container <- vector("list", length = dim_lat^2)
     
     ## Container for which PE the input maps to
     
@@ -202,18 +206,43 @@ recall_SOM <- function(final_lattice, input_space) {
             
         }
         
+        ## Add the class to the class list
+        
+        class_container[[min_list]][length(class_container[[min_list]]) + 1] <- output_space[i]
+        
     }
     
-    s <- as.character(1:matrix_dim)
+    ## Get the winning class for each neuron
+    
+    win_class <- character()
+    
+    for (i in 1:length(class_container)) {
+        
+        if (!is.null(class_container[[i]])) {
+        
+            win_class[i] <- names(sort(table(class_container[[i]]), decreasing=TRUE)[1])
+            
+        } else {
+            
+            win_class[i] <- 0
+            
+        }
+        
+    }
+    
+    win_mat <- matrix(win_class, nrow = matrix_dim, ncol = matrix_dim)
+    win_mat <- t(win_mat)
     
     temp_vec <- as.vector(neuron_map)
     temp_mat <- matrix(temp_vec, nrow = matrix_dim, ncol = matrix_dim)
     temp_mat <- apply(temp_mat, 2, rev)
     
-    # return(neuron_map)
+    recall_results <- list()
     
-    plot_ly(z = temp_mat, x = ~s, y = ~s, colors = colorRamp(c("white", "black")), type = "heatmap") %>%
-        layout(title = "PE Density Map", xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
+    recall_results[[1]] <- win_class
+    recall_results[[2]] <- temp_mat
+    
+    return(recall_results)
     
 }
 
@@ -255,7 +284,7 @@ SOM_prototype <- function(p, border, cols) {
 ## Function to plot the whole mU-matrix
 
 plot_mU_matrix <- function(W, width, height, classes, density,
-                           colornames = c('red', 'yellow', 'blue', 'green', 'orange', 'purple', 'salmon', 'turquoise', 'steelblue', 'lightyellow'),
+                           colornames = c('red', 'yellow', 'blue', 'green', 'orange', 'purple', 'salmon', 'turquoise', 'steelblue', 'aquamarine4'),
                            border = 0.05, border_max_scale = 3, xlab = '', ylab = '', ...) {
     
     index <- seq_len(ncol(W))
@@ -340,7 +369,7 @@ selected_styles <- c(7, 10, 134, 9, 4, 30, 86, 12, 92, 6)
 #     filter(StyleID %in% selected_styles)
 
 data_final <- data %>%
-    select(StyleID, Size.L., OG, FG) %>%
+    select(StyleID, Size.L., OG, FG, ABV, IBU) %>%
     filter(StyleID %in% selected_styles)
 
 ## Remove rows with NAs
@@ -367,7 +396,7 @@ matrix_dim <- 15
 ## Set some network parameters
 
 ler_rate <- 0.05
-num_iter <- 50000
+num_iter <- 500
 radius <- matrix_dim / 2
 
 ## Build the weight matrix
@@ -381,12 +410,6 @@ SOM_lattice <- build_SOM(input_size, matrix_dim)
 
 
 
-### TESTING ###
-
-input_space <- input_space[seq(1, dim(input_space)[1], 100), ]
-
-
-
 ## Learn the network
 
 learn_results <- learn_SOM(input_data = input_space, SOM_lattice, num_iter, ler_rate, radius, matrix_dim)
@@ -397,7 +420,10 @@ final_lattice <- learn_results[[length(learn_results)]][[2]]
 
 ## Recall Results
 
-recall_SOM(final_lattice, input_space)
+recall_results <- recall_SOM(final_lattice, input_space, output_space)
+
+win_class <- recall_results[[1]]
+temp_mat <- recall_results[[2]]
 
 
 
@@ -405,9 +431,14 @@ recall_SOM(final_lattice, input_space)
 
 
 
+## Make the Density Plot
 
+s <- as.character(1:matrix_dim)
 
+par(mfrow = c(1,1), mar = c(5.1, 4.1, 4.1, 2.1))
 
+plot_ly(z = temp_mat, x = ~s, y = ~s, colors = colorRamp(c("white", "black")), type = "heatmap") %>%
+    layout(title = "PE Density Map", xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
 
 
 
@@ -430,6 +461,82 @@ plot_mU_matrix(final_lattice, width = 15, height = 15, classes = c(rep(1, 225)),
 #     
 # }
 
+
+## Generate the frame and add the plots
+
+scaled_lattice <- scale(final_lattice)
+par(mfrow = c(matrix_dim, matrix_dim))
+par(mar = c(0, 0, 0, 0))
+
+plot_col <- character()
+
+for (i in 1:length(win_class)) {
+    
+    if (win_class[i] == "7") {
+        
+        plot_col[i] <- "red"
+        
+    } else if (win_class[i] == "10") {
+        
+        plot_col[i] <- "yellow"
+        
+    } else if (win_class[i] == "134") {
+        
+        plot_col[i] <- "blue"
+        
+    } else if (win_class[i] == "9") {
+        
+        plot_col[i] <- "green"
+        
+    } else if (win_class[i] == "4") {
+        
+        plot_col[i] <- "orange"
+        
+    } else if (win_class[i] == "30") {
+        
+        plot_col[i] <- "purple"
+        
+    } else if (win_class[i] == "86") {
+        
+        plot_col[i] <- "salmon"
+        
+    } else if (win_class[i] == "12") {
+        
+        plot_col[i] <- "turquoise"
+        
+    } else if (win_class[i] == "92") {
+        
+        plot_col[i] <- "steelblue"
+        
+    } else if (win_class[i] == "6") {
+        
+        plot_col[i] <- "aquamarine4"
+        
+    } else {
+        
+        plot_col[i] <- "black"
+        
+    }
+    
+}
+
+
+for (i in 1:dim(scaled_lattice)[2]) {
+    
+    y_vals <- c(scaled_lattice[, i])
+    
+    plot(x = 1:input_size,
+         y = y_vals,
+         type = "l",
+         xaxt = "n",
+         yaxt = "n",
+         ann = FALSE,
+         col = plot_col[i]
+         #xlim = c(-3, 3),
+         #ylim = c(-3, 3)
+         )
+    
+}
 
 
 
