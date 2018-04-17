@@ -399,7 +399,7 @@ matrix_dim <- 15
 ## Set some network parameters
 
 ler_rate <- 0.05
-num_iter <- 1000
+num_iter <- 20000
 radius <- matrix_dim / 2
 
 ## Build the weight matrix
