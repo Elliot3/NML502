@@ -12,6 +12,7 @@
 
 
 library(dplyr)
+library(plotly)
 
 
 
@@ -102,6 +103,13 @@ learn_SOM <- function(input_data, SOM_lattice, num_iter, ler_rate, radius, matri
         x_pt <- floor(min_list / matrix_dim) + 1
         y_pt <- min_list - ((x_pt - 1) * matrix_dim)
         
+        if (y_pt == 0) {
+            
+            x_pt <- x_pt - 1
+            y_pt <- 15
+            
+        }
+        
         min_loc <- c(x_pt, y_pt)
         
         ## Calculate the Manhattan distance
@@ -173,23 +181,39 @@ recall_SOM <- function(final_lattice, input_space) {
         x_pt <- floor(min_list / matrix_dim) + 1
         y_pt <- min_list - ((x_pt - 1) * matrix_dim)
         
+        if (y_pt == 0) {
+            
+            x_pt <- x_pt - 1
+            y_pt <- 15
+            
+        }
+        
         min_loc <- c(x_pt, y_pt)
         
         ## Add the location to the neuron map
         
-        if (neuron_map[min_loc[1], min_loc[2]] == 0) {
+        if (neuron_map[x_pt, y_pt] == 0) {
             
-            neuron_map[min_loc[1], min_loc[2]] <- 1
+            neuron_map[x_pt, y_pt] <- 1
             
         } else {
             
-            neuron_map[min_loc[1], min_loc[2]] <- neuron_map[min_loc[1], min_loc[2]] + 1
+            neuron_map[x_pt, y_pt] <- neuron_map[x_pt, y_pt] + 1
             
         }
         
     }
     
-    return(neuron_map)
+    s <- as.character(1:matrix_dim)
+    
+    temp_vec <- as.vector(neuron_map)
+    temp_mat <- matrix(temp_vec, nrow = matrix_dim, ncol = matrix_dim)
+    temp_mat <- apply(temp_mat, 2, rev)
+    
+    # return(neuron_map)
+    
+    plot_ly(z = temp_mat, x = ~s, y = ~s, colors = colorRamp(c("white", "black")), type = "heatmap") %>%
+        layout(title = "PE Density Map", xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
     
 }
 
@@ -371,6 +395,10 @@ learn_results <- learn_SOM(input_data = input_space, SOM_lattice, num_iter, ler_
 
 final_lattice <- learn_results[[length(learn_results)]][[2]]
 
+## Recall Results
+
+recall_SOM(final_lattice, input_space)
+
 
 
 ########## Plot Results ##########
@@ -388,8 +416,6 @@ final_lattice <- learn_results[[length(learn_results)]][[2]]
 
 plot_mU_matrix(final_lattice, width = 15, height = 15, classes = c(rep(1, 225)), density = c(round(runif(225) * 10)))
 
-# test <- recall_SOM(final_lattice, input_space)
-# 
 # for (i in seq(from = dim(test)[1], to = 1, by = -1)) {
 #     
 #     if (i == dim(test)[1]) {
