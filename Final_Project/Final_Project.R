@@ -1,3 +1,6 @@
+## Timing
+
+start.time <- Sys.time()
 
 
 
@@ -364,13 +367,13 @@ data <- read.csv("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/r
 
 selected_styles <- c(7, 10, 134, 9, 4, 30, 86, 12, 92, 6)
 
-# data_final <- data %>%
-#     select(StyleID, Size.L., OG, FG, ABV, IBU, Color, BoilSize, BoilTime, BoilGravity, Efficiency) %>%
-#     filter(StyleID %in% selected_styles)
-
 data_final <- data %>%
-    select(StyleID, Size.L., OG, FG, ABV, IBU) %>%
+    select(StyleID, Size.L., OG, FG, ABV, IBU, Color, BoilSize, BoilTime, BoilGravity, Efficiency) %>%
     filter(StyleID %in% selected_styles)
+
+# data_final <- data %>%
+#     select(StyleID, Size.L., OG, FG, ABV, IBU) %>%
+#     filter(StyleID %in% selected_styles)
 
 ## Remove rows with NAs
 
@@ -396,7 +399,7 @@ matrix_dim <- 15
 ## Set some network parameters
 
 ler_rate <- 0.05
-num_iter <- 500
+num_iter <- 1000
 radius <- matrix_dim / 2
 
 ## Build the weight matrix
@@ -540,7 +543,11 @@ for (i in 1:dim(scaled_lattice)[2]) {
 
 
 
+## Timing
 
+end.time <- Sys.time()
+
+end.time - start.time
 
 
 
