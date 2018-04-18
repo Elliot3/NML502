@@ -44,7 +44,7 @@ build_SOM <- function(input_size, matrix_dim) {
 
 ## Function to perform the SOM leaarning
 
-learn_SOM <- function(input_data, SOM_lattice, num_iter, ler_rate, radius, matrix_dim) {
+learn_SOM <- function(input_data, SOM_lattice, num_iter, ler_rate, radius, matrix_dim, output_space) {
     
     ## Container for the current prototype lattice
     
@@ -53,6 +53,16 @@ learn_SOM <- function(input_data, SOM_lattice, num_iter, ler_rate, radius, matri
     ## Container for the indices
     
     SOM_indices <- list()
+    
+    ## Container for the parameters
+    
+    param_container <- list()
+    
+    ## Container for learning step, radius and learning rate and parameter bucket
+    
+    ler_steps <- numeric()
+    radii <- numeric()
+    ler_rates <- numeric()
     
     ## Build the list of weight indices
     
@@ -80,6 +90,16 @@ learn_SOM <- function(input_data, SOM_lattice, num_iter, ler_rate, radius, matri
         ## Decay the radius
         
         radius <- init_radius * exp(-i / decay_constant)
+        
+        ## Add the parameters states to the container
+        
+        if ((i %% 5000 == 0) || (i == 1)) {
+            
+            ler_steps[length(ler_steps) + 1] <- i
+            radii[length(radii) + 1] <- radius
+            ler_rates[length(ler_rates) + 1] <- ler_rate
+            
+        }
         
         ## Randomly select an input vector
         
@@ -133,12 +153,20 @@ learn_SOM <- function(input_data, SOM_lattice, num_iter, ler_rate, radius, matri
         ## Add lattice to the container
         
         if ((i == 1) || (i %in% seq(from = 0, to = num_iter, length.out = 6))) {
-            
-            SOM_container[[length(SOM_container) + 1]] <- list(i, SOM_lattice)
-            
+
+            recall_results <- recall_SOM(SOM_lattice, input_space, output_space)
+
+            SOM_container[[length(SOM_container) + 1]] <- list(i, SOM_lattice, recall_results[[1]], recall_results[[2]])
+
         }
         
     }
+    
+    param_container[[1]] <- ler_steps
+    param_container[[2]] <- radii
+    param_container[[3]] <- ler_rates
+    
+    param_container <<- param_container
     
     return(SOM_container)
     
@@ -287,7 +315,7 @@ SOM_prototype <- function(p, border, cols) {
 ## Function to plot the whole mU-matrix
 
 plot_mU_matrix <- function(W, width, height, classes, density,
-                           colornames = c('red', 'yellow', 'blue', 'green', 'orange', 'purple', 'salmon', 'turquoise', 'steelblue', 'aquamarine4'),
+                           colornames = c('red', 'lightgoldenrod3', 'blue', 'green4', 'orange', 'purple', 'magenta', 'turquoise', 'indianred4', 'aquamarine4'),
                            border = 0.05, border_max_scale = 3, xlab = '', ylab = '', ...) {
     
     index <- seq_len(ncol(W))
@@ -371,10 +399,6 @@ data_final <- data %>%
     select(StyleID, Size.L., OG, FG, ABV, IBU, Color, BoilSize, BoilTime, BoilGravity, Efficiency) %>%
     filter(StyleID %in% selected_styles)
 
-# data_final <- data %>%
-#     select(StyleID, Size.L., OG, FG, ABV, IBU) %>%
-#     filter(StyleID %in% selected_styles)
-
 ## Remove rows with NAs
 
 data_final[data_final == "N/A"] <- NA
@@ -398,8 +422,8 @@ matrix_dim <- 15
 
 ## Set some network parameters
 
-ler_rate <- 0.05
-num_iter <- 20000
+ler_rate <- 0.3
+num_iter <- 500000
 radius <- matrix_dim / 2
 
 ## Build the weight matrix
@@ -415,7 +439,7 @@ SOM_lattice <- build_SOM(input_size, matrix_dim)
 
 ## Learn the network
 
-learn_results <- learn_SOM(input_data = input_space, SOM_lattice, num_iter, ler_rate, radius, matrix_dim)
+learn_results <- learn_SOM(input_data = input_space, SOM_lattice, num_iter, ler_rate, radius, matrix_dim, output_space)
 
 ## Extract the final lattice of prototypes
 
@@ -434,42 +458,59 @@ temp_mat <- recall_results[[2]]
 
 
 
-## Make the Density Plot
+##### Make the Density Plots #####
+
+
 
 s <- as.character(1:matrix_dim)
 
 par(mfrow = c(1,1), mar = c(5.1, 4.1, 4.1, 2.1))
 
-plot_ly(z = temp_mat, x = ~s, y = ~s, colors = colorRamp(c("white", "black")), type = "heatmap") %>%
+## First Plot
+
+plot_ly(z = learn_results[[1]][[4]], x = ~s, y = ~s, colors = colorRamp(c("white", "black")), type = "heatmap") %>%
+    layout(title = "PE Density Map", xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
+
+## Second Plot
+
+plot_ly(z = learn_results[[2]][[4]], x = ~s, y = ~s, colors = colorRamp(c("white", "black")), type = "heatmap") %>%
+    layout(title = "PE Density Map", xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
+
+## Third Plot
+
+plot_ly(z = learn_results[[3]][[4]], x = ~s, y = ~s, colors = colorRamp(c("white", "black")), type = "heatmap") %>%
+    layout(title = "PE Density Map", xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
+
+## Fourth Plot
+
+plot_ly(z = learn_results[[4]][[4]], x = ~s, y = ~s, colors = colorRamp(c("white", "black")), type = "heatmap") %>%
+    layout(title = "PE Density Map", xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
+
+## Fifth Plot
+
+plot_ly(z = learn_results[[5]][[4]], x = ~s, y = ~s, colors = colorRamp(c("white", "black")), type = "heatmap") %>%
+    layout(title = "PE Density Map", xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
+
+## Sixth Plot
+
+plot_ly(z = learn_results[[6]][[4]], x = ~s, y = ~s, colors = colorRamp(c("white", "black")), type = "heatmap") %>%
     layout(title = "PE Density Map", xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
 
 
 
-########## TESTING ##########
+##### Make the Vector Plots
 
 
-plot_mU_matrix(final_lattice, width = 15, height = 15, classes = c(rep(1, 225)), density = c(round(runif(225) * 10)))
 
-# for (i in seq(from = dim(test)[1], to = 1, by = -1)) {
-#     
-#     if (i == dim(test)[1]) {
-#         
-#         temp <- as.vector(test[i, ])
-#         
-#     } else {
-#         
-#         temp <- c(temp, as.vector(test[i, ]))
-#         
-#     }
-#     
-# }
-
-
-## Generate the frame and add the plots
-
-scaled_lattice <- scale(final_lattice)
 par(mfrow = c(matrix_dim, matrix_dim))
 par(mar = c(0, 0, 0, 0))
+
+
+
+## First Plot
+
+scaled_lattice <- learn_results[[1]][[2]]
+win_class <- learn_results[[1]][[3]]
 
 plot_col <- character()
 
@@ -481,7 +522,7 @@ for (i in 1:length(win_class)) {
         
     } else if (win_class[i] == "10") {
         
-        plot_col[i] <- "yellow"
+        plot_col[i] <- "lightgoldenrod3"
         
     } else if (win_class[i] == "134") {
         
@@ -489,7 +530,7 @@ for (i in 1:length(win_class)) {
         
     } else if (win_class[i] == "9") {
         
-        plot_col[i] <- "green"
+        plot_col[i] <- "green4"
         
     } else if (win_class[i] == "4") {
         
@@ -501,7 +542,7 @@ for (i in 1:length(win_class)) {
         
     } else if (win_class[i] == "86") {
         
-        plot_col[i] <- "salmon"
+        plot_col[i] <- "magenta"
         
     } else if (win_class[i] == "12") {
         
@@ -509,7 +550,7 @@ for (i in 1:length(win_class)) {
         
     } else if (win_class[i] == "92") {
         
-        plot_col[i] <- "steelblue"
+        plot_col[i] <- "indianred4"
         
     } else if (win_class[i] == "6") {
         
@@ -522,7 +563,6 @@ for (i in 1:length(win_class)) {
     }
     
 }
-
 
 for (i in 1:dim(scaled_lattice)[2]) {
     
@@ -537,9 +577,391 @@ for (i in 1:dim(scaled_lattice)[2]) {
          col = plot_col[i]
          #xlim = c(-3, 3),
          #ylim = c(-3, 3)
-         )
+    )
     
 }
+
+## Second Plot
+
+scaled_lattice <- learn_results[[2]][[2]]
+win_class <- learn_results[[2]][[3]]
+
+plot_col <- character()
+
+for (i in 1:length(win_class)) {
+    
+    if (win_class[i] == "7") {
+        
+        plot_col[i] <- "red"
+        
+    } else if (win_class[i] == "10") {
+        
+        plot_col[i] <- "lightgoldenrod3"
+        
+    } else if (win_class[i] == "134") {
+        
+        plot_col[i] <- "blue"
+        
+    } else if (win_class[i] == "9") {
+        
+        plot_col[i] <- "green4"
+        
+    } else if (win_class[i] == "4") {
+        
+        plot_col[i] <- "orange"
+        
+    } else if (win_class[i] == "30") {
+        
+        plot_col[i] <- "purple"
+        
+    } else if (win_class[i] == "86") {
+        
+        plot_col[i] <- "magenta"
+        
+    } else if (win_class[i] == "12") {
+        
+        plot_col[i] <- "turquoise"
+        
+    } else if (win_class[i] == "92") {
+        
+        plot_col[i] <- "indianred4"
+        
+    } else if (win_class[i] == "6") {
+        
+        plot_col[i] <- "aquamarine4"
+        
+    } else {
+        
+        plot_col[i] <- "black"
+        
+    }
+    
+}
+
+for (i in 1:dim(scaled_lattice)[2]) {
+    
+    y_vals <- c(scaled_lattice[, i])
+    
+    plot(x = 1:input_size,
+         y = y_vals,
+         type = "l",
+         xaxt = "n",
+         yaxt = "n",
+         ann = FALSE,
+         col = plot_col[i]
+         #xlim = c(-3, 3),
+         #ylim = c(-3, 3)
+    )
+    
+}
+
+## Third Plot
+
+scaled_lattice <- learn_results[[3]][[2]]
+win_class <- learn_results[[3]][[3]]
+
+plot_col <- character()
+
+for (i in 1:length(win_class)) {
+    
+    if (win_class[i] == "7") {
+        
+        plot_col[i] <- "red"
+        
+    } else if (win_class[i] == "10") {
+        
+        plot_col[i] <- "lightgoldenrod3"
+        
+    } else if (win_class[i] == "134") {
+        
+        plot_col[i] <- "blue"
+        
+    } else if (win_class[i] == "9") {
+        
+        plot_col[i] <- "green4"
+        
+    } else if (win_class[i] == "4") {
+        
+        plot_col[i] <- "orange"
+        
+    } else if (win_class[i] == "30") {
+        
+        plot_col[i] <- "purple"
+        
+    } else if (win_class[i] == "86") {
+        
+        plot_col[i] <- "magenta"
+        
+    } else if (win_class[i] == "12") {
+        
+        plot_col[i] <- "turquoise"
+        
+    } else if (win_class[i] == "92") {
+        
+        plot_col[i] <- "indianred4"
+        
+    } else if (win_class[i] == "6") {
+        
+        plot_col[i] <- "aquamarine4"
+        
+    } else {
+        
+        plot_col[i] <- "black"
+        
+    }
+    
+}
+
+for (i in 1:dim(scaled_lattice)[2]) {
+    
+    y_vals <- c(scaled_lattice[, i])
+    
+    plot(x = 1:input_size,
+         y = y_vals,
+         type = "l",
+         xaxt = "n",
+         yaxt = "n",
+         ann = FALSE,
+         col = plot_col[i]
+         #xlim = c(-3, 3),
+         #ylim = c(-3, 3)
+    )
+    
+}
+
+## Fourth Plot
+
+scaled_lattice <- learn_results[[4]][[2]]
+win_class <- learn_results[[4]][[3]]
+
+plot_col <- character()
+
+for (i in 1:length(win_class)) {
+    
+    if (win_class[i] == "7") {
+        
+        plot_col[i] <- "red"
+        
+    } else if (win_class[i] == "10") {
+        
+        plot_col[i] <- "lightgoldenrod3"
+        
+    } else if (win_class[i] == "134") {
+        
+        plot_col[i] <- "blue"
+        
+    } else if (win_class[i] == "9") {
+        
+        plot_col[i] <- "green4"
+        
+    } else if (win_class[i] == "4") {
+        
+        plot_col[i] <- "orange"
+        
+    } else if (win_class[i] == "30") {
+        
+        plot_col[i] <- "purple"
+        
+    } else if (win_class[i] == "86") {
+        
+        plot_col[i] <- "magenta"
+        
+    } else if (win_class[i] == "12") {
+        
+        plot_col[i] <- "turquoise"
+        
+    } else if (win_class[i] == "92") {
+        
+        plot_col[i] <- "indianred4"
+        
+    } else if (win_class[i] == "6") {
+        
+        plot_col[i] <- "aquamarine4"
+        
+    } else {
+        
+        plot_col[i] <- "black"
+        
+    }
+    
+}
+
+for (i in 1:dim(scaled_lattice)[2]) {
+    
+    y_vals <- c(scaled_lattice[, i])
+    
+    plot(x = 1:input_size,
+         y = y_vals,
+         type = "l",
+         xaxt = "n",
+         yaxt = "n",
+         ann = FALSE,
+         col = plot_col[i]
+         #xlim = c(-3, 3),
+         #ylim = c(-3, 3)
+    )
+    
+}
+
+## Fifth Plot
+
+scaled_lattice <- learn_results[[5]][[2]]
+win_class <- learn_results[[5]][[3]]
+
+plot_col <- character()
+
+for (i in 1:length(win_class)) {
+    
+    if (win_class[i] == "7") {
+        
+        plot_col[i] <- "red"
+        
+    } else if (win_class[i] == "10") {
+        
+        plot_col[i] <- "lightgoldenrod3"
+        
+    } else if (win_class[i] == "134") {
+        
+        plot_col[i] <- "blue"
+        
+    } else if (win_class[i] == "9") {
+        
+        plot_col[i] <- "green4"
+        
+    } else if (win_class[i] == "4") {
+        
+        plot_col[i] <- "orange"
+        
+    } else if (win_class[i] == "30") {
+        
+        plot_col[i] <- "purple"
+        
+    } else if (win_class[i] == "86") {
+        
+        plot_col[i] <- "magenta"
+        
+    } else if (win_class[i] == "12") {
+        
+        plot_col[i] <- "turquoise"
+        
+    } else if (win_class[i] == "92") {
+        
+        plot_col[i] <- "indianred4"
+        
+    } else if (win_class[i] == "6") {
+        
+        plot_col[i] <- "aquamarine4"
+        
+    } else {
+        
+        plot_col[i] <- "black"
+        
+    }
+    
+}
+
+for (i in 1:dim(scaled_lattice)[2]) {
+    
+    y_vals <- c(scaled_lattice[, i])
+    
+    plot(x = 1:input_size,
+         y = y_vals,
+         type = "l",
+         xaxt = "n",
+         yaxt = "n",
+         ann = FALSE,
+         col = plot_col[i]
+         #xlim = c(-3, 3),
+         #ylim = c(-3, 3)
+    )
+    
+}
+
+## Sixth Plot
+
+scaled_lattice <- learn_results[[6]][[2]]
+win_class <- learn_results[[6]][[3]]
+
+plot_col <- character()
+
+for (i in 1:length(win_class)) {
+    
+    if (win_class[i] == "7") {
+        
+        plot_col[i] <- "red"
+        
+    } else if (win_class[i] == "10") {
+        
+        plot_col[i] <- "lightgoldenrod3"
+        
+    } else if (win_class[i] == "134") {
+        
+        plot_col[i] <- "blue"
+        
+    } else if (win_class[i] == "9") {
+        
+        plot_col[i] <- "green4"
+        
+    } else if (win_class[i] == "4") {
+        
+        plot_col[i] <- "orange"
+        
+    } else if (win_class[i] == "30") {
+        
+        plot_col[i] <- "purple"
+        
+    } else if (win_class[i] == "86") {
+        
+        plot_col[i] <- "magenta"
+        
+    } else if (win_class[i] == "12") {
+        
+        plot_col[i] <- "turquoise"
+        
+    } else if (win_class[i] == "92") {
+        
+        plot_col[i] <- "indianred4"
+        
+    } else if (win_class[i] == "6") {
+        
+        plot_col[i] <- "aquamarine4"
+        
+    } else {
+        
+        plot_col[i] <- "black"
+        
+    }
+    
+}
+
+for (i in 1:dim(scaled_lattice)[2]) {
+    
+    y_vals <- c(scaled_lattice[, i])
+    
+    plot(x = 1:input_size,
+         y = y_vals,
+         type = "l",
+         xaxt = "n",
+         yaxt = "n",
+         ann = FALSE,
+         col = plot_col[i]
+         #xlim = c(-3, 3),
+         #ylim = c(-3, 3)
+    )
+    
+}
+
+
+
+
+
+########## TESTING ##########
+
+
+
+
+
+# plot_mU_matrix(final_lattice, width = 15, height = 15, classes = c(rep(1, 225)), density = c(round(runif(225) * 10)))
 
 
 
