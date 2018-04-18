@@ -2,6 +2,10 @@
 
 start.time <- Sys.time()
 
+## Saving workspace image
+
+# save(list = ls(.GlobalEnv), file = "~/Documents/Rice_University/Spring_2018/NML502/Final_Project/R_Env_Image")
+
 
 
 ########## Workspace Preparation ##########
