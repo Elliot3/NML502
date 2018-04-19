@@ -14,6 +14,12 @@ start.time <- Sys.time()
 
 
 
+options(scipen = 999)
+
+
+
+
+
 ##### Load Packages #####
 
 
@@ -408,6 +414,29 @@ data_final <- data %>%
 data_final[data_final == "N/A"] <- NA
 data_final <- data_final[complete.cases(data_final), ]
 
+data_final$StyleID <- as.factor(data_final$StyleID)
+data_final$BoilGravity <- as.numeric(data_final$BoilGravity)
+
+data_final_orig <- data_final
+
+## Eugen's data normalization method
+
+for(i in 2:11) {
+    
+    data_final[,i] <- (data_final_orig[,i]-(mean(data_final_orig[,i])-2*sd(data_final_orig[,i])))/((mean(data_final_orig[,i])+2*sd(data_final_orig[,i]))-(mean(data_final_orig[,i])-2*sd(data_final_orig[,i])))
+    data_final[data_final[,i]>1,i]=1
+    data_final[data_final[,i]<0,i]=0
+    
+}
+
+for(i in 2:11) {
+    
+    data_final[,i] <- (data_final[,i]-(mean(data_final[,i])-2*sd(data_final[,i])))/((mean(data_final[,i])+2*sd(data_final[,i]))-(mean(data_final[,i])-2*sd(data_final[,i])))
+    data_final[data_final[,i]>1,i]=1
+    data_final[data_final[,i]<0,i]=0
+    
+}
+
 ## Separate the input space from the labels
 
 output_space <- matrix(as.numeric(unlist(data_final$StyleID)), nrow = length(data_final$StyleID))
@@ -462,6 +491,22 @@ temp_mat <- recall_results[[2]]
 
 
 
+##### Plot Decays #####
+
+
+
+plot(x = param_container[[1]], y = param_container[[2]], type = "l",
+     xlab = "Learning Step",
+     ylab = "Neighborhood Radius",
+     main = "Neighborhood Radius Decay")
+
+plot(x = param_container[[1]], y = param_container[[3]], type = "l",
+     xlab = "Learning Step",
+     ylab = "Learning Rate",
+     main = "Learning Rate Decay")
+
+
+
 ##### Make the Density Plots #####
 
 
@@ -473,32 +518,32 @@ par(mfrow = c(1,1), mar = c(5.1, 4.1, 4.1, 2.1))
 ## First Plot
 
 plot_ly(z = learn_results[[1]][[4]], x = ~s, y = ~s, colors = colorRamp(c("white", "black")), type = "heatmap") %>%
-    layout(title = "PE Density Map", xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
+    layout(title = paste0("PE Density Map at Step: ", learn_results[[1]][[1]]), xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
 
 ## Second Plot
 
 plot_ly(z = learn_results[[2]][[4]], x = ~s, y = ~s, colors = colorRamp(c("white", "black")), type = "heatmap") %>%
-    layout(title = "PE Density Map", xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
+    layout(title = paste0("PE Density Map at Step: ", learn_results[[2]][[1]]), xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
 
 ## Third Plot
 
 plot_ly(z = learn_results[[3]][[4]], x = ~s, y = ~s, colors = colorRamp(c("white", "black")), type = "heatmap") %>%
-    layout(title = "PE Density Map", xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
+    layout(title = paste0("PE Density Map at Step: ", learn_results[[3]][[1]]), xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
 
 ## Fourth Plot
 
 plot_ly(z = learn_results[[4]][[4]], x = ~s, y = ~s, colors = colorRamp(c("white", "black")), type = "heatmap") %>%
-    layout(title = "PE Density Map", xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
+    layout(title = paste0("PE Density Map at Step: ", learn_results[[4]][[1]]), xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
 
 ## Fifth Plot
 
 plot_ly(z = learn_results[[5]][[4]], x = ~s, y = ~s, colors = colorRamp(c("white", "black")), type = "heatmap") %>%
-    layout(title = "PE Density Map", xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
+    layout(title = paste0("PE Density Map at Step: ", learn_results[[5]][[1]]), xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
 
 ## Sixth Plot
 
 plot_ly(z = learn_results[[6]][[4]], x = ~s, y = ~s, colors = colorRamp(c("white", "black")), type = "heatmap") %>%
-    layout(title = "PE Density Map", xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
+    layout(title = paste0("PE Density Map at Step: ", learn_results[[6]][[1]]), xaxis = list(title = "PE X Coordinate"), yaxis = list(title = "PE Y Coordinate"))
 
 
 
