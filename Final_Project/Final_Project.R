@@ -417,26 +417,6 @@ data_final <- data_final[complete.cases(data_final), ]
 data_final$StyleID <- as.factor(data_final$StyleID)
 data_final$BoilGravity <- as.numeric(data_final$BoilGravity)
 
-data_final_orig <- data_final
-
-## Eugen's data normalization method
-
-for(i in 2:11) {
-    
-    data_final[,i] <- (data_final_orig[,i]-(mean(data_final_orig[,i])-2*sd(data_final_orig[,i])))/((mean(data_final_orig[,i])+2*sd(data_final_orig[,i]))-(mean(data_final_orig[,i])-2*sd(data_final_orig[,i])))
-    data_final[data_final[,i]>1,i]=1
-    data_final[data_final[,i]<0,i]=0
-    
-}
-
-for(i in 2:11) {
-    
-    data_final[,i] <- (data_final[,i]-(mean(data_final[,i])-2*sd(data_final[,i])))/((mean(data_final[,i])+2*sd(data_final[,i]))-(mean(data_final[,i])-2*sd(data_final[,i])))
-    data_final[data_final[,i]>1,i]=1
-    data_final[data_final[,i]<0,i]=0
-    
-}
-
 ## Separate the input space from the labels
 
 output_space <- matrix(as.numeric(unlist(data_final$StyleID)), nrow = length(data_final$StyleID))
