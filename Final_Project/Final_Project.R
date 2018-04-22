@@ -472,7 +472,7 @@ for (i in 2:11) {
 
 ## Subset the data for testing purposes
 
-data_final <- data_final[seq(1, nrow(data_final), 50), ]
+data_final <- data_final[seq(1, nrow(data_final), 20), ]
 
 ## Reset the row names
 
@@ -660,7 +660,7 @@ round((
 ## Set some network parameters
 
 ler_rate <- 0.3
-num_iter <- 10000
+num_iter <- 50000
 radius <- matrix_dim / 2
 
 ## Build the weight matrix
