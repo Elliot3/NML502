@@ -162,7 +162,7 @@ learn_SOM <- function(input_data, SOM_lattice, num_iter, ler_rate, radius, matri
         
         ## Add lattice to the container
         
-        if ((i == 1) || (i %in% seq(from = 0, to = num_iter, length.out = 6))) {
+        if ((i == 1) || (i %in% seq(from = 0, to = num_iter, length.out = 11))) {
 
             recall_results <- recall_SOM(SOM_lattice, input_space, output_space)
 
@@ -417,6 +417,36 @@ data_final <- data_final[complete.cases(data_final), ]
 data_final$StyleID <- as.factor(data_final$StyleID)
 data_final$BoilGravity <- as.numeric(data_final$BoilGravity)
 
+## Eugen's data scaling method
+
+data_final_orig <- data_final
+
+for (i in 2:11) {
+    
+    data_final[, i] <- (data_final_orig[, i] - (mean(data_final_orig[, i]) - 2*sd(data_final_orig[, i]))) /
+        ((mean(data_final_orig[, i]) + 2*sd(data_final_orig[, i])) - (mean(data_final_orig[, i]) - 2*sd(data_final_orig[, i])))
+    data_final[data_final[, i] > 1, i] <- 1
+    data_final[data_final[, i] < 0, i] <- 0
+    
+}
+
+for (i in 2:11) {
+    
+    data_final[, i] <- (data_final[, i] - (mean(data_final[, i]) - 2*sd(data_final[, i]))) /
+        ((mean(data_final[, i]) + 2*sd(data_final[, i])) - (mean(data_final[, i]) - 2*sd(data_final[, i])))
+    data_final[data_final[, i] > 1, i] <- 1
+    data_final[data_final[, i] < 0, i] <- 0
+    
+}
+
+## Subset the data for testing purposes
+
+data_final <- data_final[seq(1, nrow(data_final), 100), ]
+
+## Reset the row names
+
+rownames(data_final) <- NULL
+
 ## Separate the input space from the labels
 
 output_space <- matrix(as.numeric(unlist(data_final$StyleID)), nrow = length(data_final$StyleID))
@@ -436,7 +466,7 @@ matrix_dim <- 15
 ## Set some network parameters
 
 ler_rate <- 0.3
-num_iter <- 1000000
+num_iter <- 1000
 radius <- matrix_dim / 2
 
 ## Build the weight matrix
