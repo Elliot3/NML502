@@ -178,11 +178,11 @@ learn_SOM <- function(input_data, SOM_lattice, num_iter, ler_rate, radius, matri
         
         ## Add lattice to the container
         
-        if ((i == 1) || (i %in% seq(from = 0, to = num_iter, length.out = 5))) {
+        if ((i == 1) || (i %in% seq(from = 0, to = num_iter, length.out = 6))) {
 
             recall_results <- recall_SOM(SOM_lattice, input_space, output_space)
 
-            SOM_container[[length(SOM_container) + 1]] <- list(i, SOM_lattice, recall_results[[1]], recall_results[[2]])
+            SOM_container[[length(SOM_container) + 1]] <- list(i, SOM_lattice, recall_results[[1]], recall_results[[2]], recall_results[[3]])
 
         }
         
@@ -217,6 +217,7 @@ recall_SOM <- function(final_lattice, input_space, output_space) {
     neuron_map <- matrix(0, ncol = dim_lat, nrow = dim_lat)
     colnames(neuron_map) <- 1:dim_lat
     rownames(neuron_map) <- 1:dim_lat
+    PE_for_input <- matrix(NA, nrow = dim(input_space)[1], ncol = 1)
     
     for (i in 1:dim(input_space)[1]) {
         
@@ -268,6 +269,7 @@ recall_SOM <- function(final_lattice, input_space, output_space) {
         ## Add the class to the class list
         
         class_container[[min_list]][length(class_container[[min_list]]) + 1] <- output_space[i]
+        PE_for_input[i, 1] <- output_space[i]
         
     }
     
@@ -300,6 +302,7 @@ recall_SOM <- function(final_lattice, input_space, output_space) {
     
     recall_results[[1]] <- win_class
     recall_results[[2]] <- temp_mat
+    recall_results[[3]] <- PE_for_input
     
     return(recall_results)
     
