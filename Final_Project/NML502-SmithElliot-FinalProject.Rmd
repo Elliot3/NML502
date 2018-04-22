@@ -157,6 +157,7 @@ There were many motivations for us to perform this analysis:
 
 * Finally, we wanted to compare how Self-Organizing Maps compared against a more conventional clustering method (in this case, K Means). Since SOMs are a relatively new topic to us, we wanted to understand how it would compare to methods that we had more familiarity with in an effort to expand our statistical toolsets and perhaps replace our primitive tools (K Means) with a more robust one (SOMs).
 
+\newpage
 
 # Objectives
 
@@ -438,6 +439,8 @@ The colors for the lines are defined as follows according to the Beer Style:
 * Dark Turquoise - Witbier
 * Black - No PE Mapped
 
+\newpage
+
 At learning step 500,000 we can see that almost half of the PEs map to American IPA (Red), while another fraction (approximately one in five) map to American Pale Ale (Sandy). We can see some marginally substantial clusters starting to form, such as American Stout (Magenta) in the top left and American Amber Ale (Orange) in the bottom left. As we move from learning step 500,000 to learning step 1,000,000, we can see that American IPA (Red) is beginning to form at least two distinct subclasses in its right cluster, whereas there is no clear definition of its rightmost cluster. The Amber Ale (Orange) cluster has moved closer to the top where it is blending with a cluster formed from Irish Red Ale (Turquoise). A Saison (Green) cluster has formed near the bottom of the lattice trying to differentiate itself from the neighboring American IPA (Red) and American Pale Ale (Sandy). Moving from learning step 1,000,000 to 1,500,000, the structure of our large American IPA (Red) and American Pale Ale (Sandy) clusters remain the same, with each having many subclasses. Meanwhile, American Stout (Magenta) is solidifying its cluster in the west side of the lattice, competing with Irish Red Ale (Turquoise) and American Amber Ale (Orange). There are many distinct American Amber Ale (Orange) clusters forming across the lattice. Finally, moving onto the 2,000,000 learning step from learning step 1,500,000, we are seeing a second American Stout (Magenta) subclass forming that is quite distinct from the first. Otherwise, there weren't many drastic changes. We will show the final vector dimensionality latttice in our final SOM conclusion section; the lattice at the 2,500,000 learning step.
 
 ### Final Results
@@ -471,11 +474,27 @@ Our methodology for calculating the classification rate it quite simple and comp
 * Learning Step 2,000,000: 56.09%
 * Learning Step 2,500,000: 55.86%
 
-# The Comparison
-
 # Conclusion
 
+## The Comparison
 
+* Based on the Classification Rate of K Means (32.86%) v. the Classification Rate of our Self-Organizing Map (55.86%) we can confidently say that our SOM has much better classification power than does our K Means approach; however, we will discuss in our Further Investigation section some changes we would recommend to our study design and some further analyses we would be interested in performing.
+
+* In regards to subclass detection, we see that generating the vector dimensionality plots are a great tool for the task; we were able to identify several subclasses within existing tasks using the results of our SOM. On the contrary, K Means was very poor at identifying subclasses; quite the opposite actually, performing K Means made it harder to identify where subclasses may have existed in our data!
+
+## Further Investigation
+
+Below are some ways we would consider altering our study and some additional analyses we would consider to augment our project:
+
+* Change Classification Rate: While we are very confident in our result, we would like to consider changing how we calculate our classification rates to be more uniform. As it stands, our classification rates for the K Means approach determined which Beer Style won in each of the 10 clusters, while our SOM approach determined which Beer Style won each of 225 PEs; this approach may have adversely affected K Means (though it just have likely may not have). We would like to consider a more uniform approach to classfication rate so that we can be more confident about our result.
+
+* Conscience SOM: We would also like to work with a Conscience SOM paradigm, particularly for us since our dataset did not have an equal number of inputs per class; we believe that this may have skewed the results and a Conscience SOM may have remedied this issues.
+
+* Increasse Dimensionality: It would be a wise consideration to try increasing our dimensionality to see if we can uncover some other interesting features to help build our map. Of the 23 available features, we chose to use 10 that we were familiar with, perhaps an approach of randomly selecting features based on some probabilty could lead to some interesting findings that we otherwise would have missed.
+
+* Data Pre-Processing: Our data pre-processing approach was done so to scale the data between 0 and 1 and remove outlying values; we may want to consider other approaches that would serve a similar purpose but may perhaps affect our final result.
+
+* SOM Distance Functions: Another possible further investigation would be to experiment with other distance functions when learning our SOM; applying different types of learning functions and seeing how they affect our results would be a great way to refine our output and make our analysis more robust.
 
 
 
