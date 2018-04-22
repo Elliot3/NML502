@@ -472,7 +472,7 @@ for (i in 2:11) {
 
 ## Subset the data for testing purposes
 
-data_final <- data_final[seq(1, nrow(data_final), 100), ]
+data_final <- data_final[seq(1, nrow(data_final), 50), ]
 
 ## Reset the row names
 
@@ -660,7 +660,7 @@ round((
 ## Set some network parameters
 
 ler_rate <- 0.3
-num_iter <- 500
+num_iter <- 10000
 radius <- matrix_dim / 2
 
 ## Build the weight matrix
@@ -684,9 +684,33 @@ recall_results <- recall_SOM(final_lattice, input_space, output_space)
 win_class <- recall_results[[1]]
 temp_mat <- recall_results[[2]]
 
+## Container for recalled classification rates
+
+som_class_rates <- numeric()
+
+## Calculate the classification rates at each recalled step
+
+for (i in 1:length(learn_results)) {
+
+    class_rates <- numeric()
+    
+    for (j in 1:length(output_space)) {
+    
+        class_rates[j] <- learn_results[[i]][[3]][learn_results[[i]][[5]][j]] == output_space[j]
+    
+    }
+    
+    som_class_rates[i] <- sum(class_rates)/length(class_rates)
+
+}
+
+
+
 
 
 ########## Plot Results - SOM ##########
+
+
 
 
 
