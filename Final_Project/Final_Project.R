@@ -8,6 +8,20 @@ start.time <- Sys.time()
 
 
 
+
+
+########## TESTING ##########
+
+
+
+
+
+# head(data[data$StyleID == "Saison", ][,2:5], 5)
+
+
+
+
+
 ########## Workspace Preparation ##########
 
 
@@ -26,6 +40,8 @@ options(scipen = 999)
 
 library(dplyr)
 library(plotly)
+library(ggplot2)
+library(reshape2)
 
 
 
@@ -162,7 +178,7 @@ learn_SOM <- function(input_data, SOM_lattice, num_iter, ler_rate, radius, matri
         
         ## Add lattice to the container
         
-        if ((i == 1) || (i %in% seq(from = 0, to = num_iter, length.out = 11))) {
+        if ((i == 1) || (i %in% seq(from = 0, to = num_iter, length.out = 5))) {
 
             recall_results <- recall_SOM(SOM_lattice, input_space, output_space)
 
@@ -185,6 +201,8 @@ learn_SOM <- function(input_data, SOM_lattice, num_iter, ler_rate, radius, matri
 ## Function to determine which PE an input maps to 
 
 recall_SOM <- function(final_lattice, input_space, output_space) {
+    
+    # final_lattice <- SOM_lattice
     
     ## Dimensions of the square lattice
     
@@ -403,18 +421,28 @@ data <- read.csv("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/r
 
 ## Select my beer styles and variables of interest
 
-selected_styles <- c(7, 10, 134, 9, 4, 30, 86, 12, 92, 6)
+selected_styles <- c("American IPA",
+                     "American Pale Ale",
+                     "Saison",
+                     "American Light Lager",
+                     "American Amber Ale",
+                     "Imperial IPA",
+                     "American Stout",
+                     "Irish Red Ale",
+                     "American Brown Ale",
+                     "Witbier")
 
 data_final <- data %>%
-    select(StyleID, Size.L., OG, FG, ABV, IBU, Color, BoilSize, BoilTime, BoilGravity, Efficiency) %>%
-    filter(StyleID %in% selected_styles)
+    filter(Style %in% selected_styles) %>%
+    select(Style, Size.L., OG, FG, ABV, IBU, Color, BoilSize, BoilTime, BoilGravity, Efficiency)
+
+data_final$Style <- factor(data_final$Style)
 
 ## Remove rows with NAs
 
 data_final[data_final == "N/A"] <- NA
 data_final <- data_final[complete.cases(data_final), ]
 
-data_final$StyleID <- as.factor(data_final$StyleID)
 data_final$BoilGravity <- as.numeric(data_final$BoilGravity)
 
 ## Eugen's data scaling method
@@ -449,13 +477,176 @@ rownames(data_final) <- NULL
 
 ## Separate the input space from the labels
 
-output_space <- matrix(as.numeric(unlist(data_final$StyleID)), nrow = length(data_final$StyleID))
+output_space <- matrix(data_final$Style, nrow = length(data_final$Style))
 input_space <- matrix(as.numeric(unlist(data_final[, 2:dim(data_final)[2]])), nrow = nrow(data_final[, 2:dim(data_final)[2]]))
 
 ## Define some data details
 
 input_size <- dim(input_space)[2]
 matrix_dim <- 15
+
+
+
+##### Plot the Data Clean #####
+
+
+
+## Plot American IPA
+
+par(mfrow = c(1,1), mar = c(5.1, 4.1, 4.1, 2.1))
+
+old_df_1 <- melt(data_final_orig[data_final_orig$Style == "American IPA", ][, 2:11])
+fix_df_1 <- melt(data_final[data_final$Style == "American IPA", ][, 2:11])
+
+ggplot(data = old_df_1) +
+    geom_boxplot(aes(x = variable, y = value)) +
+    labs(title = "Raw Data - American IPA", x = "Variable", y = "Value")
+
+ggplot(data = fix_df_1) +
+    geom_boxplot(aes(x = variable, y = value)) +
+    labs(title = "Scaled Data - American IPA", x = "Variable", y = "Value")
+
+## Plot Irish Red Ale
+
+par(mfrow = c(1,1), mar = c(5.1, 4.1, 4.1, 2.1))
+
+old_df_2 <- melt(data_final_orig[data_final_orig$Style == "Irish Red Ale", ][, 2:11])
+fix_df_2 <- melt(data_final[data_final$Style == "Irish Red Ale", ][, 2:11])
+
+ggplot(data = old_df_2) +
+    geom_boxplot(aes(x = variable, y = value)) +
+    labs(title = "Raw Data - Irish Red Ale", x = "Variable", y = "Value")
+
+ggplot(data = fix_df_2) +
+    geom_boxplot(aes(x = variable, y = value)) +
+    labs(title = "Scaled Data - Irish Red Ale", x = "Variable", y = "Value")
+
+## Plot American Light Lager
+
+par(mfrow = c(1,1), mar = c(5.1, 4.1, 4.1, 2.1))
+
+old_df_3 <- melt(data_final_orig[data_final_orig$Style == "American Light Lager", ][, 2:11])
+fix_df_3 <- melt(data_final[data_final$Style == "American Light Lager", ][, 2:11])
+
+ggplot(data = old_df_3) +
+    geom_boxplot(aes(x = variable, y = value)) +
+    labs(title = "Raw Data - American Light Lager", x = "Variable", y = "Value")
+
+ggplot(data = fix_df_3) +
+    geom_boxplot(aes(x = variable, y = value)) +
+    labs(title = "Scaled Data - American Light Lager", x = "Variable", y = "Value")
+
+
+
+##### Plot the Cleaned Data #####
+
+
+
+## Find the smallest data size
+
+min_data_size <- min(table(data_final$Style))
+
+## Take an even sample size of each Style
+
+clust_plot <- rbind(
+    sample_n(data_final[data_final$Style == "American IPA", ], size = min_data_size, replace = FALSE),
+    sample_n(data_final[data_final$Style == "American Pale Ale", ], size = min_data_size, replace = FALSE),
+    sample_n(data_final[data_final$Style == "Saison", ], size = min_data_size, replace = FALSE),
+    sample_n(data_final[data_final$Style == "American Light Lager", ], size = min_data_size, replace = FALSE),
+    sample_n(data_final[data_final$Style == "American Amber Ale", ], size = min_data_size, replace = FALSE),
+    sample_n(data_final[data_final$Style == "Imperial IPA", ], size = min_data_size, replace = FALSE),
+    sample_n(data_final[data_final$Style == "American Stout", ], size = min_data_size, replace = FALSE),
+    sample_n(data_final[data_final$Style == "Irish Red Ale", ], size = min_data_size, replace = FALSE),
+    sample_n(data_final[data_final$Style == "American Brown Ale", ], size = min_data_size, replace = FALSE),
+    sample_n(data_final[data_final$Style == "Witbier", ], size = min_data_size, replace = FALSE)
+)
+
+## First Plot - ABV and Color
+
+ggplot(data = clust_plot) +
+    geom_point(aes(x = ABV, y = Color, col = Style), alpha = 0.5) +
+    labs(title = "Natural Clustering - Color and ABV")
+
+## Second Plot - IBU and Color
+
+ggplot(data = clust_plot) +
+    geom_point(aes(x = IBU, y = Color, col = Style), alpha = 0.5) +
+    labs(title = "Natural Clustering - IBU and Color")
+
+## Third Plot - ABV and IBU
+
+ggplot(data = clust_plot) +
+    geom_point(aes(x = ABV, y = IBU, col = Style), alpha = 0.5) +
+    labs(title = "Natural Clustering - ABV and IBU")
+
+
+
+
+
+########## Perform Analysis - K Means ##########
+
+
+
+## Calculate the K Means Clusters
+
+kmeans_data <- kmeans(x = clust_plot[, 2:11], centers = 10)
+
+## First Plot - ABV and Color
+
+ggplot() +
+    geom_point(aes(x = clust_plot$ABV, y = clust_plot$Color, col = as.factor(kmeans_data$cluster)), alpha = 0.5) +
+    labs(title = "K Means Clustering - ABV and Color", x = "ABV", y = "Color", color = "Clusters")
+
+## Second Plot - IBU and Color
+
+ggplot() +
+    geom_point(aes(x = clust_plot$IBU, y = clust_plot$Color, col = as.factor(kmeans_data$cluster)), alpha = 0.5) +
+    labs(title = "K Means Clustering - IBU and Color", x = "IBU", y = "Color", color = "Clusters")
+
+## Third Plot - ABV and IBU
+
+ggplot() +
+    geom_point(aes(x = clust_plot$ABV, y = clust_plot$IBU, col = as.factor(kmeans_data$cluster)), alpha = 0.5) +
+    labs(title = "K Means Clustering - ABV and IBU", x = "IBU", y = "Color", color = "Clusters")
+
+## Calculate the misclassification rate
+
+kmeans_rate_df <- data.frame(true_style = clust_plot$Style, k_clust = kmeans_data$cluster)
+clust_table <- table(kmeans_rate_df)
+
+totals <- apply(clust_table, 2, sum)
+perc_clust <- setNames(data.frame(matrix(ncol = dim(clust_table)[1], nrow = 10)), colnames(clust_table))
+rownames(perc_clust) <- rownames(clust_table)
+
+for (i in 1:dim(clust_table)[2]) {
+    
+    perc_clust[, i] <- round(matrix(clust_table[, i]) / totals[i], 4)
+    
+}
+
+round((
+    sum(
+        
+        dim(kmeans_rate_df[kmeans_rate_df$true_style == rownames(perc_clust)[which.max(perc_clust[, 1])] & kmeans_rate_df$k_clust == 1, ])[1],
+        dim(kmeans_rate_df[kmeans_rate_df$true_style == rownames(perc_clust)[which.max(perc_clust[, 2])] & kmeans_rate_df$k_clust == 2, ])[1],
+        dim(kmeans_rate_df[kmeans_rate_df$true_style == rownames(perc_clust)[which.max(perc_clust[, 3])] & kmeans_rate_df$k_clust == 3, ])[1],
+        dim(kmeans_rate_df[kmeans_rate_df$true_style == rownames(perc_clust)[which.max(perc_clust[, 4])] & kmeans_rate_df$k_clust == 4, ])[1],
+        dim(kmeans_rate_df[kmeans_rate_df$true_style == rownames(perc_clust)[which.max(perc_clust[, 5])] & kmeans_rate_df$k_clust == 5, ])[1],
+        dim(kmeans_rate_df[kmeans_rate_df$true_style == rownames(perc_clust)[which.max(perc_clust[, 6])] & kmeans_rate_df$k_clust == 6, ])[1],
+        dim(kmeans_rate_df[kmeans_rate_df$true_style == rownames(perc_clust)[which.max(perc_clust[, 7])] & kmeans_rate_df$k_clust == 7, ])[1],
+        dim(kmeans_rate_df[kmeans_rate_df$true_style == rownames(perc_clust)[which.max(perc_clust[, 8])] & kmeans_rate_df$k_clust == 8, ])[1],
+        dim(kmeans_rate_df[kmeans_rate_df$true_style == rownames(perc_clust)[which.max(perc_clust[, 9])] & kmeans_rate_df$k_clust == 9, ])[1],
+        dim(kmeans_rate_df[kmeans_rate_df$true_style == rownames(perc_clust)[which.max(perc_clust[, 10])] & kmeans_rate_df$k_clust == 10, ])[1]
+        
+    ) / dim(kmeans_rate_df)[1]), 4
+) * 100
+
+
+
+
+########## Perform Analysis - SOM ##########
+
+
 
 
 
@@ -466,23 +657,18 @@ matrix_dim <- 15
 ## Set some network parameters
 
 ler_rate <- 0.3
-num_iter <- 1000
+num_iter <- 500
 radius <- matrix_dim / 2
 
 ## Build the weight matrix
 
 SOM_lattice <- build_SOM(input_size, matrix_dim)
 
-
-
-
-########## Perform Analysis ##########
-
-
-
 ## Learn the network
 
-learn_results <- learn_SOM(input_data = input_space, SOM_lattice, num_iter, ler_rate, radius, matrix_dim, output_space)
+input_data <- input_space
+
+learn_results <- learn_SOM(input_space, SOM_lattice, num_iter, ler_rate, radius, matrix_dim, output_space)
 
 ## Extract the final lattice of prototypes
 
@@ -497,7 +683,7 @@ temp_mat <- recall_results[[2]]
 
 
 
-########## Plot Results ##########
+########## Plot Results - SOM ##########
 
 
 
@@ -557,7 +743,7 @@ plot_ly(z = learn_results[[6]][[4]], x = ~s, y = ~s, colors = colorRamp(c("white
 
 
 
-##### Make the Vector Plots
+##### Make the Vector Plots #####
 
 
 
@@ -575,43 +761,43 @@ plot_col <- character()
 
 for (i in 1:length(win_class)) {
     
-    if (win_class[i] == "7") {
+    if (win_class[i] == "American IPA") {
         
         plot_col[i] <- "red"
         
-    } else if (win_class[i] == "10") {
+    } else if (win_class[i] == "American Pale Ale") {
         
         plot_col[i] <- "lightgoldenrod3"
         
-    } else if (win_class[i] == "134") {
+    } else if (win_class[i] == "Saison") {
         
         plot_col[i] <- "blue"
         
-    } else if (win_class[i] == "9") {
+    } else if (win_class[i] == "Saison") {
         
         plot_col[i] <- "green4"
         
-    } else if (win_class[i] == "4") {
+    } else if (win_class[i] == "American Amber Ale") {
         
         plot_col[i] <- "orange"
         
-    } else if (win_class[i] == "30") {
+    } else if (win_class[i] == "Imperial IPA") {
         
         plot_col[i] <- "purple"
         
-    } else if (win_class[i] == "86") {
+    } else if (win_class[i] == "American Stout") {
         
         plot_col[i] <- "magenta"
         
-    } else if (win_class[i] == "12") {
+    } else if (win_class[i] == "Irish Red Ale") {
         
         plot_col[i] <- "turquoise"
         
-    } else if (win_class[i] == "92") {
+    } else if (win_class[i] == "American Brown Ale") {
         
         plot_col[i] <- "indianred4"
         
-    } else if (win_class[i] == "6") {
+    } else if (win_class[i] == "Witbier") {
         
         plot_col[i] <- "aquamarine4"
         
@@ -649,43 +835,43 @@ plot_col <- character()
 
 for (i in 1:length(win_class)) {
     
-    if (win_class[i] == "7") {
+    if (win_class[i] == "American IPA") {
         
         plot_col[i] <- "red"
         
-    } else if (win_class[i] == "10") {
+    } else if (win_class[i] == "American Pale Ale") {
         
         plot_col[i] <- "lightgoldenrod3"
         
-    } else if (win_class[i] == "134") {
+    } else if (win_class[i] == "Saison") {
         
         plot_col[i] <- "blue"
         
-    } else if (win_class[i] == "9") {
+    } else if (win_class[i] == "Saison") {
         
         plot_col[i] <- "green4"
         
-    } else if (win_class[i] == "4") {
+    } else if (win_class[i] == "American Amber Ale") {
         
         plot_col[i] <- "orange"
         
-    } else if (win_class[i] == "30") {
+    } else if (win_class[i] == "Imperial IPA") {
         
         plot_col[i] <- "purple"
         
-    } else if (win_class[i] == "86") {
+    } else if (win_class[i] == "American Stout") {
         
         plot_col[i] <- "magenta"
         
-    } else if (win_class[i] == "12") {
+    } else if (win_class[i] == "Irish Red Ale") {
         
         plot_col[i] <- "turquoise"
         
-    } else if (win_class[i] == "92") {
+    } else if (win_class[i] == "American Brown Ale") {
         
         plot_col[i] <- "indianred4"
         
-    } else if (win_class[i] == "6") {
+    } else if (win_class[i] == "Witbier") {
         
         plot_col[i] <- "aquamarine4"
         
@@ -723,43 +909,43 @@ plot_col <- character()
 
 for (i in 1:length(win_class)) {
     
-    if (win_class[i] == "7") {
+    if (win_class[i] == "American IPA") {
         
         plot_col[i] <- "red"
         
-    } else if (win_class[i] == "10") {
+    } else if (win_class[i] == "American Pale Ale") {
         
         plot_col[i] <- "lightgoldenrod3"
         
-    } else if (win_class[i] == "134") {
+    } else if (win_class[i] == "Saison") {
         
         plot_col[i] <- "blue"
         
-    } else if (win_class[i] == "9") {
+    } else if (win_class[i] == "Saison") {
         
         plot_col[i] <- "green4"
         
-    } else if (win_class[i] == "4") {
+    } else if (win_class[i] == "American Amber Ale") {
         
         plot_col[i] <- "orange"
         
-    } else if (win_class[i] == "30") {
+    } else if (win_class[i] == "Imperial IPA") {
         
         plot_col[i] <- "purple"
         
-    } else if (win_class[i] == "86") {
+    } else if (win_class[i] == "American Stout") {
         
         plot_col[i] <- "magenta"
         
-    } else if (win_class[i] == "12") {
+    } else if (win_class[i] == "Irish Red Ale") {
         
         plot_col[i] <- "turquoise"
         
-    } else if (win_class[i] == "92") {
+    } else if (win_class[i] == "American Brown Ale") {
         
         plot_col[i] <- "indianred4"
         
-    } else if (win_class[i] == "6") {
+    } else if (win_class[i] == "Witbier") {
         
         plot_col[i] <- "aquamarine4"
         
@@ -797,43 +983,43 @@ plot_col <- character()
 
 for (i in 1:length(win_class)) {
     
-    if (win_class[i] == "7") {
+    if (win_class[i] == "American IPA") {
         
         plot_col[i] <- "red"
         
-    } else if (win_class[i] == "10") {
+    } else if (win_class[i] == "American Pale Ale") {
         
         plot_col[i] <- "lightgoldenrod3"
         
-    } else if (win_class[i] == "134") {
+    } else if (win_class[i] == "Saison") {
         
         plot_col[i] <- "blue"
         
-    } else if (win_class[i] == "9") {
+    } else if (win_class[i] == "Saison") {
         
         plot_col[i] <- "green4"
         
-    } else if (win_class[i] == "4") {
+    } else if (win_class[i] == "American Amber Ale") {
         
         plot_col[i] <- "orange"
         
-    } else if (win_class[i] == "30") {
+    } else if (win_class[i] == "Imperial IPA") {
         
         plot_col[i] <- "purple"
         
-    } else if (win_class[i] == "86") {
+    } else if (win_class[i] == "American Stout") {
         
         plot_col[i] <- "magenta"
         
-    } else if (win_class[i] == "12") {
+    } else if (win_class[i] == "Irish Red Ale") {
         
         plot_col[i] <- "turquoise"
         
-    } else if (win_class[i] == "92") {
+    } else if (win_class[i] == "American Brown Ale") {
         
         plot_col[i] <- "indianred4"
         
-    } else if (win_class[i] == "6") {
+    } else if (win_class[i] == "Witbier") {
         
         plot_col[i] <- "aquamarine4"
         
@@ -871,43 +1057,43 @@ plot_col <- character()
 
 for (i in 1:length(win_class)) {
     
-    if (win_class[i] == "7") {
+    if (win_class[i] == "American IPA") {
         
         plot_col[i] <- "red"
         
-    } else if (win_class[i] == "10") {
+    } else if (win_class[i] == "American Pale Ale") {
         
         plot_col[i] <- "lightgoldenrod3"
         
-    } else if (win_class[i] == "134") {
+    } else if (win_class[i] == "Saison") {
         
         plot_col[i] <- "blue"
         
-    } else if (win_class[i] == "9") {
+    } else if (win_class[i] == "Saison") {
         
         plot_col[i] <- "green4"
         
-    } else if (win_class[i] == "4") {
+    } else if (win_class[i] == "American Amber Ale") {
         
         plot_col[i] <- "orange"
         
-    } else if (win_class[i] == "30") {
+    } else if (win_class[i] == "Imperial IPA") {
         
         plot_col[i] <- "purple"
         
-    } else if (win_class[i] == "86") {
+    } else if (win_class[i] == "American Stout") {
         
         plot_col[i] <- "magenta"
         
-    } else if (win_class[i] == "12") {
+    } else if (win_class[i] == "Irish Red Ale") {
         
         plot_col[i] <- "turquoise"
         
-    } else if (win_class[i] == "92") {
+    } else if (win_class[i] == "American Brown Ale") {
         
         plot_col[i] <- "indianred4"
         
-    } else if (win_class[i] == "6") {
+    } else if (win_class[i] == "Witbier") {
         
         plot_col[i] <- "aquamarine4"
         
@@ -945,43 +1131,43 @@ plot_col <- character()
 
 for (i in 1:length(win_class)) {
     
-    if (win_class[i] == "7") {
+    if (win_class[i] == "American IPA") {
         
         plot_col[i] <- "red"
         
-    } else if (win_class[i] == "10") {
+    } else if (win_class[i] == "American Pale Ale") {
         
         plot_col[i] <- "lightgoldenrod3"
         
-    } else if (win_class[i] == "134") {
+    } else if (win_class[i] == "Saison") {
         
         plot_col[i] <- "blue"
         
-    } else if (win_class[i] == "9") {
+    } else if (win_class[i] == "Saison") {
         
         plot_col[i] <- "green4"
         
-    } else if (win_class[i] == "4") {
+    } else if (win_class[i] == "American Amber Ale") {
         
         plot_col[i] <- "orange"
         
-    } else if (win_class[i] == "30") {
+    } else if (win_class[i] == "Imperial IPA") {
         
         plot_col[i] <- "purple"
         
-    } else if (win_class[i] == "86") {
+    } else if (win_class[i] == "American Stout") {
         
         plot_col[i] <- "magenta"
         
-    } else if (win_class[i] == "12") {
+    } else if (win_class[i] == "Irish Red Ale") {
         
         plot_col[i] <- "turquoise"
         
-    } else if (win_class[i] == "92") {
+    } else if (win_class[i] == "American Brown Ale") {
         
         plot_col[i] <- "indianred4"
         
-    } else if (win_class[i] == "6") {
+    } else if (win_class[i] == "Witbier") {
         
         plot_col[i] <- "aquamarine4"
         
@@ -1014,13 +1200,9 @@ for (i in 1:dim(scaled_lattice)[2]) {
 
 
 
-########## TESTING ##########
 
 
 
-
-
-# plot_mU_matrix(final_lattice, width = 15, height = 15, classes = c(rep(1, 225)), density = c(round(runif(225) * 10)))
 
 
 
