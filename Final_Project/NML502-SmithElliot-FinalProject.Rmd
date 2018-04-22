@@ -5,6 +5,140 @@ date: "4/22/2018"
 output: pdf_document
 ---
 
+```{r, echo = FALSE}
+
+library(gridExtra)
+library(png)
+library(grid)
+library(knitr)
+
+suppressMessages(
+    library(dplyr)
+)
+
+```
+
+```{r, echo = FALSE}
+
+##### Load the Data #####
+
+
+
+## Import the data
+
+data <- read.csv("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/recipeData.csv")
+
+## Select my beer styles and variables of interest
+
+selected_styles <- c("American IPA",
+                     "American Pale Ale",
+                     "Saison",
+                     "American Light Lager",
+                     "American Amber Ale",
+                     "Imperial IPA",
+                     "American Stout",
+                     "Irish Red Ale",
+                     "American Brown Ale",
+                     "Witbier")
+
+data_final <- data %>%
+    filter(Style %in% selected_styles) %>%
+    select(Style, Size.L., OG, FG, ABV, IBU, Color, BoilSize, BoilTime, BoilGravity, Efficiency)
+
+data_final$Style <- factor(data_final$Style)
+
+## Remove rows with NAs
+
+data_final[data_final == "N/A"] <- NA
+data_final <- data_final[complete.cases(data_final), ]
+
+data_final$BoilGravity <- as.numeric(data_final$BoilGravity)
+
+## Eugen's data scaling method
+
+data_final_orig <- data_final
+
+for (i in 2:11) {
+    
+    data_final[, i] <- (data_final_orig[, i] - (mean(data_final_orig[, i]) - 2*sd(data_final_orig[, i]))) /
+        ((mean(data_final_orig[, i]) + 2*sd(data_final_orig[, i])) - (mean(data_final_orig[, i]) - 2*sd(data_final_orig[, i])))
+    data_final[data_final[, i] > 1, i] <- 1
+    data_final[data_final[, i] < 0, i] <- 0
+    
+}
+
+for (i in 2:11) {
+    
+    data_final[, i] <- (data_final[, i] - (mean(data_final[, i]) - 2*sd(data_final[, i]))) /
+        ((mean(data_final[, i]) + 2*sd(data_final[, i])) - (mean(data_final[, i]) - 2*sd(data_final[, i])))
+    data_final[data_final[, i] > 1, i] <- 1
+    data_final[data_final[, i] < 0, i] <- 0
+    
+}
+
+## Subset the data for testing purposes
+
+# data_final <- data_final[seq(1, nrow(data_final), 20), ]
+
+## Reset the row names
+
+rownames(data_final) <- NULL
+
+## Separate the input space from the labels
+
+output_space <- matrix(data_final$Style, nrow = length(data_final$Style))
+input_space <- matrix(as.numeric(unlist(data_final[, 2:dim(data_final)[2]])), nrow = nrow(data_final[, 2:dim(data_final)[2]]))
+
+## Define some data details
+
+input_size <- dim(input_space)[2]
+matrix_dim <- 15
+
+
+########## Perform Analysis - K Means ##########
+
+
+
+## Find the smallest data size
+
+min_data_size <- min(table(data_final$Style))
+
+## Take an even sample size of each Style
+
+clust_plot <- rbind(
+    sample_n(data_final[data_final$Style == "American IPA", ], size = min_data_size, replace = FALSE),
+    sample_n(data_final[data_final$Style == "American Pale Ale", ], size = min_data_size, replace = FALSE),
+    sample_n(data_final[data_final$Style == "Saison", ], size = min_data_size, replace = FALSE),
+    sample_n(data_final[data_final$Style == "American Light Lager", ], size = min_data_size, replace = FALSE),
+    sample_n(data_final[data_final$Style == "American Amber Ale", ], size = min_data_size, replace = FALSE),
+    sample_n(data_final[data_final$Style == "Imperial IPA", ], size = min_data_size, replace = FALSE),
+    sample_n(data_final[data_final$Style == "American Stout", ], size = min_data_size, replace = FALSE),
+    sample_n(data_final[data_final$Style == "Irish Red Ale", ], size = min_data_size, replace = FALSE),
+    sample_n(data_final[data_final$Style == "American Brown Ale", ], size = min_data_size, replace = FALSE),
+    sample_n(data_final[data_final$Style == "Witbier", ], size = min_data_size, replace = FALSE)
+)
+
+## Calculate the K Means Clusters
+
+kmeans_data <- kmeans(x = clust_plot[, 2:11], centers = 10)
+
+## Calculate the misclassification rate
+
+kmeans_rate_df <- data.frame(true_style = clust_plot$Style, k_clust = kmeans_data$cluster)
+clust_table <- table(kmeans_rate_df)
+
+totals <- apply(clust_table, 2, sum)
+perc_clust <- setNames(data.frame(matrix(ncol = dim(clust_table)[1], nrow = 10)), colnames(clust_table))
+rownames(perc_clust) <- rownames(clust_table)
+
+for (i in 1:dim(clust_table)[2]) {
+    
+    perc_clust[, i] <- round(matrix(clust_table[, i]) / totals[i], 4)
+    
+}
+
+```
+
 # Introduction
 
 In this report, we will be comparing the clustering results of a dataset of different beer types using two distinct methods, K Means and Self-Organizing Maps. Our previous experience tells us that when data reaches a particular level of complexity that K Means is no longer an acceptable method for clustering; we hope to prove or debunk this assertion. In addition, given our hypothesis is correct, that K Means is not a satisfactory method, we hope to prove that using an SOM network is a significantly stronger technique for identifying clusters in multi-dimensional data. We hope that you will learn something through this process as we have.
@@ -26,15 +160,185 @@ There were many motivations for us to perform this analysis:
 
 # Objectives
 
+Our objectives with this analysis are the following:
+
+* Compare visually how effective K Means and SOMs are at clustering the data. We want to get a visual representation of how the two methods cluster the data in an effort to determine their efficiency at completing this task.
+
+* Compare the successful classification rates for K Means and SOMs to determine which clustering performed better when we take into account the class labels. This simple number is our key statistic, it tells us that given our method used, we expect to correctly classify a particular percent of inputs.
+
+* Determine if any subclasses exist within our defined classes based on the results of the clustering analysis. This result will work both ways in that it will help us understand how the clustering is realized, in addition to helping us understand differences internal to each class.
+
+* Finally, we want to learn something new about beer that we did not know beforehand!
+
 # Our Data
 
 ## Beer Data
 
+Our data came from the kaggle.com website, a repository for publicly available data for personal or research analyses. The original data came with 73,861 observations and 23 distinct features. We decided to investigate the following beer styles:
+
+* American Pale Ale
+* Imperial IPA
+* American IPA
+* Saison
+* American Brown Ale
+* Witbier
+* American Amber Ale
+* Irish Red Ale
+* American Stout
+* American Light Lager
+
+In addition, we decided to investigate the impacts of the following features:
+
+* Size (L) - the amount brewed for each observation
+* OG - the original density of the wort (key ingredient in the brewing process) compared to the water before fermenation
+* FG - the final density of the wort compared to the water after fermentation
+* ABV - alcohol by volumne
+* IBU - international bittering units (an international standard for the beer's level of bitterness)
+* Color - a numerical scale representing light to dark beer coloring
+* BoilSize - the amount of fluid at the beginning of the boil process
+* BoilTime - the amount of time the wort is boiled
+* BoilGravity - density of the wort compared to the water before the boil
+* Efficiency - how efficient the mash was at extracting sugar from the grain
+
+Our reduction down to these selected beer styles (and after removing any rows that had any of the selected variables marked as NA) left us with 31,419 observations.
+
+## Raw Data Issues
+
+A preliminary look at our raw data told us that each of our features were heavily affected by outlying values. Directly below is a look at three of our selected beer styles (from left to right: American IPA, Irish Red Ale and American Light Lager) where we have created a box plot for each to visualize how spread the data is for each feature. As we can see, our data is heavily impacted by outlying values. This is something that we will want to remedy so that points that are particularly outside of the inter-quartile range do not adversely affect our analysis by giving those values too much weight.
+
+```{r, echo = FALSE}
+
+img1 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/boxplot_raw_1.png")), interpolate = FALSE)
+img2 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/boxplot_raw_2.png")), interpolate = FALSE)
+img3 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/boxplot_raw_3.png")), interpolate = FALSE)
+
+grid.arrange(img1, img2, img3, nrow = 1)
+
+```
+
 ## Data Transformation
+
+Our solution to the outlying data issues was to scaled 2 standard deviations of our data between 0 and 1. This transformation allowed us to remove all outlying values that would overly affected our analysis and normalize between 0 and 1 so that no single feature with a large range would dominate the analysis. Please see below for the transformation on the previously displayed beer styles (from left to right: American IPA, Irish Red Ale and American Light Lager).
+
+```{r, echo = FALSE}
+
+img1 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/boxplot_scale_1.png")), interpolate = FALSE)
+img2 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/boxplot_scale_2.png")), interpolate = FALSE)
+img3 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/boxplot_scale_3.png")), interpolate = FALSE)
+
+grid.arrange(img1, img2, img3, nrow = 1)
+
+```
 
 # Our Analysis
 
 ## K Means
+
+To begin our K Means analysis, we will begin by selecting notable features (based on our discretion); we have selected Color, ABV and IBU. We will then plot the natural clusters based on our cleaned data, to show the relation between each of these variables, based on the accompanying class label. Then, we will use R's kmeans() function with our data, specify that we are looking for ten clusters, and then visualize the same plots as above, however, in the K Means cases, we will color them observations based on the cluster they have been assigned to. In this way, we can compare the natural clusters against how K Means clusters the data.
+
+### Color and ABV
+
+```{r, echo = FALSE}
+
+img1 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/clust_nat_1.png")), interpolate = FALSE)
+img2 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/clust_kmeans_1.png")), interpolate = FALSE)
+
+grid.arrange(img1, img2, nrow = 1)
+
+```
+
+We draw the following notable conclusions:
+
+* With the natural clustering, we see approximately five dominant clusters:
+    * American Brown Ale - Light Brown
+    * Irish Red Ale - Purple
+    * American Light Lager - Green
+    * Witbier - Magenta
+    * Imperial IPA - Blue
+* With K Means, we see approximately four dominant clusters:
+    * Cluster 1 - Red
+    * Cluster 2 - Light Brown
+    * Cluster 7 - Blue
+    * Cluster 9 - Light Purple
+* Overall, we see much stronger, specific color density with the K Means results; we can infer this is because closer observations are lumped together in the same cluster
+* It appears that Cluster 7 is a combination of American Brown Ale and the Irish Red Ale with a higher Color value
+* Cluster 9 appears to be a combination of Witbier and the Irish Red Ale with a lower Color value
+
+### IBU and Color
+
+```{r, echo = FALSE}
+
+img1 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/clust_nat_2.png")), interpolate = FALSE)
+img2 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/clust_kmeans_2.png")), interpolate = FALSE)
+
+grid.arrange(img1, img2, nrow = 1)
+
+```
+
+We draw the following notable conclusions:
+
+* With the natural clustering, we see approximately seven dominant clusters:
+    * American Amber Ale - Red
+    * American Brown Ale - Light Brown
+    * Irish Red Ale - Purple
+    * American Light Lager - Green
+    * Witbier - Magenta
+    * Saison - Light Purple
+    * Imperial IPA - Blue
+    * American IPA - Green-Brown
+* With K Means, we see approximately three dominant clusters:
+    * Cluster 2 - Light Brown
+    * Cluster 7 - Blue
+    * Cluster 9 - Light Purple
+* We see very defined natural clusters, which is impressive because there are seven distinct ones; however, our clusters with K Means are much less strong
+* It looks as though K Means transformed the natural cluster amalgam of American Light Lager and American Brown Ale and split them up evenly between two clusters (Clusters 2 and 9)
+* In this case, we believe that K Means negatively impacted the natural clustering process; where there were seven very strongly defined clusters naturally, K Means created only three dominant clusters which are quite ill-defined
+
+### ABV and IBU
+
+```{r, echo = FALSE}
+
+img1 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/clust_nat_3.png")), interpolate = FALSE)
+img2 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/clust_kmeans_3.png")), interpolate = FALSE)
+
+grid.arrange(img1, img2, nrow = 1)
+
+```
+
+We draw the following notable conclusions:
+
+* With the natural clustering, we see approximately four dominant clusters:
+    * Irish Red Ale - Purple
+    * American Light Lager - Green
+    * Witbier - Magenta
+    * Imperial IPA - Blue
+* With K Means, we see approximately three dominant clusters:
+    * Cluster 2 - Light Brown
+    * Cluster 7 - Blue
+    * Cluster 9 - Light Purple
+* Aside from Imperial IPA and Witbier, we dont't see impressive natural clustering; the large center cluster seems to be a mixture of Irish Red Ale, American Brown Ale and American Light Lager
+* The K Means again did a poor clustering in this case; there appears to be the three clusters we defined (with Clusters 7 and 9 being very similar) and not much else
+* There is clearly a one-to-one relationship between the Natural Cluster of Imperial IPA and K Means Cluster 2
+
+### Classification Rate
+
+To determine the K Means classification rate, we first determined how many of each Beer Style contributed to each of our contrived K Means clusters (columns 1-10 below); in this way, we can see which Beer Styles contribute the most to each Cluster. The table below shows us this result:
+
+```{r, echo = FALSE}
+
+kable(clust_table)
+
+```
+
+Using the above result, we can see the fraction of Beer Style contributions to each K Means Cluster. Taking it one step further, we can determine which Beer Style is the "winner" (drawing a parallel with the winning methodology used by SOM) of the corresponding Cluster based on the highest percent contributor to that cluster; and can then refer to the observations that map to these clusters of the winning Beer Style as correctly classified. The table below shows this percent result:
+
+```{r, echo = FALSE}
+
+kable(perc_clust)
+
+```
+
+Based on the above methodology, we calculated our Classfication Rate (correct classifications) as: 32.86%.
 
 ## Self-Organizing Map
 
