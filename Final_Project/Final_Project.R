@@ -698,6 +698,8 @@ for (i in 1:length(learn_results)) {
 
 }
 
+round(som_class_rates, 4) * 100
+
 
 
 
@@ -790,7 +792,7 @@ for (i in 1:length(win_class)) {
         
         plot_col[i] <- "lightgoldenrod3"
         
-    } else if (win_class[i] == "Saison") {
+    } else if (win_class[i] == "American Light Lager") {
         
         plot_col[i] <- "blue"
         
@@ -864,7 +866,7 @@ for (i in 1:length(win_class)) {
         
         plot_col[i] <- "lightgoldenrod3"
         
-    } else if (win_class[i] == "Saison") {
+    } else if (win_class[i] == "American Light Lager") {
         
         plot_col[i] <- "blue"
         
@@ -938,7 +940,7 @@ for (i in 1:length(win_class)) {
         
         plot_col[i] <- "lightgoldenrod3"
         
-    } else if (win_class[i] == "Saison") {
+    } else if (win_class[i] == "American Light Lager") {
         
         plot_col[i] <- "blue"
         
@@ -1012,7 +1014,7 @@ for (i in 1:length(win_class)) {
         
         plot_col[i] <- "lightgoldenrod3"
         
-    } else if (win_class[i] == "Saison") {
+    } else if (win_class[i] == "American Light Lager") {
         
         plot_col[i] <- "blue"
         
@@ -1086,7 +1088,7 @@ for (i in 1:length(win_class)) {
         
         plot_col[i] <- "lightgoldenrod3"
         
-    } else if (win_class[i] == "Saison") {
+    } else if (win_class[i] == "American Light Lager") {
         
         plot_col[i] <- "blue"
         
@@ -1160,7 +1162,7 @@ for (i in 1:length(win_class)) {
         
         plot_col[i] <- "lightgoldenrod3"
         
-    } else if (win_class[i] == "Saison") {
+    } else if (win_class[i] == "American Light Lager") {
         
         plot_col[i] <- "blue"
         

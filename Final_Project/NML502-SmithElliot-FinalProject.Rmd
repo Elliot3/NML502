@@ -342,6 +342,149 @@ Based on the above methodology, we calculated our Classfication Rate (correct cl
 
 ## Self-Organizing Map
 
+### Network Parameters
+
+* Network Parameters
+    * Topology: 225 PEs (15x15 2-dimensional square lattice)
+    * Each PE is a 10-dimensional vector (see below for weight draws)
+* Learning Parameters
+    * Initial Weights: Drawn from U[-0.5, 0.5]
+    * Initial Learning Rate ($\alpha_{init}$): 0.3
+    * Learning Decay Rate: $\alpha_{init} * e^\frac{-i}{n}$
+        * i = current learning step
+        * n = total number of learning steps
+    * Initial Radius ($\theta_{init}$): 7.5
+    * Radius Decay Rate: $\theta_{init} * e^\frac{-i}{\mu}$
+        * i = current learning step
+        * n = total number of learning steps
+        * $\mu = \frac{n}{log(\theta_{init})}$
+    * Momentum: None
+    * Stopping Criteria: 2,500,000 learning steps
+* Input Data
+    * As previously described
+* Error and Performance Measure
+    * Learning Steps Performed: 2,500,000
+    * Monitoring Frequency: Every 500,000 Learning Steps
+    
+### Decay Graphs
+
+```{r, echo = FALSE, fig.height = 4, fig.align = 'center'}
+
+img <- readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/ler_rate_decay.png")
+grid.raster(img)
+
+```
+
+```{r, echo = FALSE, fig.height = 4, fig.align = 'center'}
+
+img <- readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/radius_decay.png")
+grid.raster(img)
+
+```
+
+### Learning Process - PE Density
+
+```{r, echo = FALSE}
+
+img1 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/pe_dens_500k.png")), interpolate = FALSE)
+img2 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/pe_dens_1m.png")), interpolate = FALSE)
+img3 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/pe_dens_1.5m.png")), interpolate = FALSE)
+img4 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/pe_dens_2m.png")), interpolate = FALSE)
+
+grid.arrange(img1, img2, img3, img4, nrow = 2)
+
+```
+
+The above matrix of graphs represents the number of inputs that map to each of the PEs in our 15x15 network lattice at several learning steps. The images are arranged as follows:
+
+* Top Left - 500,000 Learning Steps
+* Top Right - 1,000,000 Learning Steps
+* Bottom Left - 1,500,000 Learning Steps
+* Bottom Right - 2,000,000 Learning Steps
+
+As we can see, during the learning process, the number of mapped inputs to each PE increases over time, that is, as learning progresses, the inputs are mapped to a wider range of PEs, instead of just a few at the beginning of the learning process. We can see that at learning step 500,000, most of the inputs are mapped to a select few PEs mostly at the outside of the lattice, while there does appear to be a cluster forming in the bottom left area that is not part of the fringe of the lattice. At the 1,000,000 learning step, much of the inputs that were originally mapped to PEs on the outside of the lattice are now moving towards the center of the lattice; we can see a strong cluster forming near the middle and bottom of the lattice. At the 1,500,000 learning step, we are still seeing a strong favoritism of the inputs to map to PEs on the fringes of the lattice, however, the density in the middle of the lattice is starting to become much more uniform. Finally, at the 2,000,000 learning step, the lattice is almost completely uniform; this is a great result. We will show the final PE density latttice in our final SOM conclusion section; the lattice at the 2,500,000 learning step.
+
+### Learning Process - PE Dimensionality
+
+```{r, echo = FALSE}
+
+img1 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/vec_plot_500k.png")), interpolate = FALSE)
+img2 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/vec_plot_1m.png")), interpolate = FALSE)
+img3 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/vec_plot_1.5m.png")), interpolate = FALSE)
+img4 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/vec_plot_2m.png")), interpolate = FALSE)
+
+grid.arrange(img1, img2, img3, img4, nrow = 2)
+
+```
+
+The above matrix of graphs represents the vector of dimensions to each of the PEs in our 15x15 network lattice at several learning steps. That is, each PE is represented by a line that shows each of its dimensions in 10-dimensional space. In addition, each line is colored by the Beer Style for which most the inputs mapped to. So, for example, if most of the inputs that mapped to the lattice at (1, 1) were American IPA, we would color the drawn line red. The images are arranged as follows:
+
+* Top Left - 500,000 Learning Steps
+* Top Right - 1,000,000 Learning Steps
+* Bottom Left - 1,500,000 Learning Steps
+* Bottom Right - 2,000,000 Learning Steps
+
+The colors for the lines are defined as follows according to the Beer Style:
+
+* Red - American IPA
+* Sandy - American Pale Ale
+* Blue - American Light Lager
+* Green - Saison
+* Orange - American Amber Ale
+* Purple - Imperial IPA
+* Magenta - American Stout
+* Turquoise - Irish Red Ale
+* Dark Red - American Brown Ale
+* Dark Turquoise - Witbier
+* Black - No PE Mapped
+
+At learning step 500,000 we can see that almost half of the PEs map to American IPA (Red), while another fraction (approximately one in five) map to American Pale Ale (Sandy). We can see some marginally substantial clusters starting to form, such as American Stout (Magenta) in the top left and American Amber Ale (Orange) in the bottom left. As we move from learning step 500,000 to learning step 1,000,000, we can see that American IPA (Red) is beginning to form at least two distinct subclasses in its right cluster, whereas there is no clear definition of its rightmost cluster. The Amber Ale (Orange) cluster has moved closer to the top where it is blending with a cluster formed from Irish Red Ale (Turquoise). A Saison (Green) cluster has formed near the bottom of the lattice trying to differentiate itself from the neighboring American IPA (Red) and American Pale Ale (Sandy). Moving from learning step 1,000,000 to 1,500,000, the structure of our large American IPA (Red) and American Pale Ale (Sandy) clusters remain the same, with each having many subclasses. Meanwhile, American Stout (Magenta) is solidifying its cluster in the west side of the lattice, competing with Irish Red Ale (Turquoise) and American Amber Ale (Orange). There are many distinct American Amber Ale (Orange) clusters forming across the lattice. Finally, moving onto the 2,000,000 learning step from learning step 1,500,000, we are seeing a second American Stout (Magenta) subclass forming that is quite distinct from the first. Otherwise, there weren't many drastic changes. We will show the final vector dimensionality latttice in our final SOM conclusion section; the lattice at the 2,500,000 learning step.
+
+### Final Results
+
+```{r, echo = FALSE}
+
+img1 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/pe_dens_2.5m.png")), interpolate = FALSE)
+img2 <- rasterGrob(as.raster(readPNG("~/Documents/Rice_University/Spring_2018/NML502/Final_Project/Plots/vec_plot_2.5m.png")), interpolate = FALSE)
+
+grid.arrange(img1, img2, nrow = 1)
+
+```
+
+As we can see on the PE Density Plot, not much has changed since learning step 2,000,000; however, we are continuing to see the density per PE decreasing as inputs are continuing to be mapped to a wider variety of PEs.
+
+As for the final PE dimensionality plot, we are seeing the following characteristics of our data:
+
+* American IPA (Red) and American Pale Ale (Sandy) are very ill-defined, not only are their winning PEs spread out, but withing the connected clusters we are seeing several, often indistinct subclasses
+* American Stout (Magenta) is one of the most well-defined clusters (on the left side of the lattice) with two apparent and distinct subclasses
+* American Brown Ale (Dark Red) is also quite well defined, like American Stout (Magenta) it appears to have two reasonably distinct subclasses
+* Saison (Green), while not having a true distinct cluster in the lattice space, does appear to have two reasonalby distinct subclasses (ignoring the PEs it won near the top and top-left of the lattice)
+* Imperial IPA (Purple) also has a very well-defined cluster at the bottom left of the lattice; interstingly, it appears to have attracted an American IPA (Red) cluster, which makes sense since they are both the same style of beer
+
+### Classification Rate
+
+Our methodology for calculating the classification rate it quite simple and compares nicely with our methodology in the K Means case. Essentially, we find the winning Beer Type of each PE based on which Beer Type had the most inputs mapped to each PE. This will allow us to declare a class winner for each PE. Then, we sum all of the inputs that mapped to a PE that was won by their particular class and then divide by all of the inputs; we have the following classification rates at each monitoring frequency:
+
+* Learning Step 500,000: 52.24%
+* Learning Step 1,000,000: 53.53%
+* Learning Step 1,500,000: 53.98%
+* Learning Step 2,000,000: 56.09%
+* Learning Step 2,500,000: 55.86%
+
 # The Comparison
 
 # Conclusion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
