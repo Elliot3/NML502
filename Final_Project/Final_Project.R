@@ -269,7 +269,7 @@ recall_SOM <- function(final_lattice, input_space, output_space) {
         ## Add the class to the class list
         
         class_container[[min_list]][length(class_container[[min_list]]) + 1] <- output_space[i]
-        PE_for_input[i, 1] <- output_space[i]
+        PE_for_input[i, 1] <- min_list
         
     }
     
